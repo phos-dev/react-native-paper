@@ -100,9 +100,6 @@ const DrawerItem = ({
           { backgroundColor, borderRadius: roundness },
           style,
         ]}
-        // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
-        accessibilityTraits={active ? ['button', 'selected'] : 'button'}
-        accessibilityComponentType="button"
         accessibilityRole="button"
         accessibilityState={{ selected: active }}
         accessibilityLabel={accessibilityLabel}

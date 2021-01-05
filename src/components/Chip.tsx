@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-  AccessibilityState,
   Animated,
   Platform,
   StyleProp,
@@ -219,20 +218,6 @@ const Chip = ({
     ? color(selectedColor).fade(0.5).rgb().string()
     : selectedBackgroundColor;
 
-  const accessibilityTraits = ['button'];
-  const accessibilityState: AccessibilityState = {
-    selected,
-    disabled,
-  };
-
-  if (selected) {
-    accessibilityTraits.push('selected');
-  }
-
-  if (disabled) {
-    accessibilityTraits.push('disabled');
-  }
-
   const elevationStyle = Platform.OS === 'android' ? elevation : 0;
 
   return (
@@ -267,11 +252,8 @@ const Chip = ({
         underlayColor={underlayColor}
         disabled={disabled}
         accessibilityLabel={accessibilityLabel}
-        // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
-        accessibilityTraits={accessibilityTraits}
-        accessibilityComponentType="button"
         accessibilityRole="button"
-        accessibilityState={accessibilityState}
+        accessibilityState={{ selected, disabled }}
         testID={testID}
       >
         <View style={[styles.content, { paddingRight: onClose ? 32 : 4 }]}>
@@ -330,9 +312,6 @@ const Chip = ({
         <View style={styles.closeButtonStyle}>
           <TouchableWithoutFeedback
             onPress={onClose}
-            // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
-            accessibilityTraits="button"
-            accessibilityComponentType="button"
             accessibilityRole="button"
             accessibilityLabel={closeIconAccessibilityLabel}
           >

@@ -91,7 +91,6 @@ exports[`renders with placeholder 1`] = `
   </View>
   <TextInput
     accessibilityRole="search"
-    accessibilityTraits="search"
     allowFontScaling={true}
     keyboardAppearance="light"
     placeholder="Search"
@@ -285,7 +284,6 @@ exports[`renders with text 1`] = `
   </View>
   <TextInput
     accessibilityRole="search"
-    accessibilityTraits="search"
     allowFontScaling={true}
     keyboardAppearance="light"
     placeholder="Search"
