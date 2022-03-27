@@ -112,6 +112,13 @@ const MenuExample = ({ navigation }: Props) => {
               onPress={() => {}}
               title="Paste"
             />
+            {isV3 && (
+              <Menu.Item
+                trailingIcon="share-variant"
+                onPress={() => {}}
+                title="Share"
+              />
+            )}
           </Menu>
         </View>
         <Menu
