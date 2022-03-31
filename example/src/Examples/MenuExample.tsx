@@ -66,8 +66,8 @@ const MenuExample = ({ navigation }: Props) => {
           anchor={
             <Appbar.Action
               icon={MORE_ICON}
-              color="white"
               onPress={_toggleMenu('menu1')}
+              {...(isV3 && { color: 'white' })}
             />
           }
         >
