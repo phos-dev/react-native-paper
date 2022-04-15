@@ -67,7 +67,7 @@ const MenuExample = ({ navigation }: Props) => {
             <Appbar.Action
               icon={MORE_ICON}
               onPress={_toggleMenu('menu1')}
-              {...(isV3 && { color: 'white' })}
+              {...(!isV3 && { color: 'white' })}
             />
           }
         >
