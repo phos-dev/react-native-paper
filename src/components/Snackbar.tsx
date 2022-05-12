@@ -227,7 +227,7 @@ const Snackbar = ({
               onDismiss();
             }}
             style={[styles.button, actionStyle]}
-            color={theme.isV3 ? theme.colors.primary : theme.colors?.accent}
+            textColor={theme.isV3 ? theme.colors.primary : theme.colors?.accent}
             compact
             mode="text"
             {...actionProps}

@@ -3,116 +3,223 @@ import color from 'color';
 import { black, white } from '../../styles/themes/v2/colors';
 import type { Theme } from '../../types';
 
-export type buttonMode =
+export type ButtonMode =
   | 'text'
   | 'outlined'
   | 'contained'
   | 'elevated'
   | 'contained-tonal';
 
-export const getButtonColors = ({
-  buttonColor,
-  theme,
-  mode,
-  disabled,
-  dark,
-}: {
-  buttonColor?: string;
+type BaseProps = {
+  isMode: (mode: ButtonMode) => boolean;
   theme: Theme;
-  mode: buttonMode;
   disabled?: boolean;
-  dark?: boolean;
-}) => {
-  let backgroundColor;
-  let borderColor;
-  let textColor;
-  let borderWidth;
+};
 
-  const isMode = (modeToCompare: buttonMode) => {
-    return mode === modeToCompare;
-  };
+const isDark = ({
+  dark,
+  backgroundColor,
+}: {
+  dark?: boolean;
+  backgroundColor?: string;
+}) => {
+  if (typeof dark === 'boolean') {
+    return dark;
+  }
+
+  if (backgroundColor === 'transparent') {
+    return false;
+  }
+
+  if (backgroundColor !== 'transparent') {
+    return !color(backgroundColor).isLight();
+  }
+
+  return false;
+};
+
+const getButtonBackgroundColor = ({
+  isMode,
+  theme,
+  disabled,
+  customButtonColor,
+}: BaseProps & {
+  customButtonColor?: string;
+}) => {
+  if (customButtonColor && !disabled) {
+    return customButtonColor;
+  }
 
   if (theme.isV3) {
     if (disabled) {
-      textColor = theme.colors.onSurfaceDisabled;
-      if (isMode('outlined')) {
-        backgroundColor = 'transparent';
-        borderColor = theme.colors.surfaceDisabled;
-        borderWidth = 1;
-      } else if (isMode('text')) {
-        backgroundColor = 'transparent';
-      } else {
-        backgroundColor = theme.colors.surfaceDisabled;
+      if (isMode('outlined') || isMode('text')) {
+        return 'transparent';
       }
-    } else {
-      if (isMode('outlined')) {
-        borderColor = theme.colors.outline;
-        borderWidth = 1;
-        textColor = buttonColor || theme.colors.primary;
-      } else if (isMode('text')) {
-        textColor = buttonColor || theme.colors.primary;
-      } else if (isMode('elevated')) {
-        textColor = theme.colors.primary;
-        backgroundColor = buttonColor || theme.colors.elevation.level1;
-      } else if (isMode('contained')) {
-        textColor = theme.colors.onPrimary;
-        backgroundColor = buttonColor || theme.colors.primary;
-      } else if (isMode('contained-tonal')) {
-        textColor = theme.colors.onSecondaryContainer;
-        backgroundColor = buttonColor || theme.colors.secondaryContainer;
+
+      return theme.colors.surfaceDisabled;
+    }
+
+    if (isMode('elevated')) {
+      return theme.colors.elevation.level1;
+    }
+
+    if (isMode('contained')) {
+      return theme.colors.primary;
+    }
+
+    if (isMode('contained-tonal')) {
+      return theme.colors.secondaryContainer;
+    }
+  }
+
+  if (isMode('contained')) {
+    if (disabled) {
+      return color(theme.dark ? white : black)
+        .alpha(0.12)
+        .rgb()
+        .string();
+    }
+
+    return theme.colors.primary;
+  }
+
+  return 'transparent';
+};
+
+const getButtonTextColor = ({
+  isMode,
+  theme,
+  disabled,
+  customTextColor,
+  backgroundColor,
+  dark,
+}: BaseProps & {
+  customTextColor?: string;
+  backgroundColor: string;
+  dark?: boolean;
+}) => {
+  if (customTextColor && !disabled) {
+    return customTextColor;
+  }
+
+  if (theme.isV3) {
+    if (disabled) {
+      return theme.colors.onSurfaceDisabled;
+    }
+
+    if (typeof dark === 'boolean') {
+      if (
+        isMode('contained') ||
+        isMode('contained-tonal') ||
+        isMode('elevated')
+      ) {
+        return isDark({ dark, backgroundColor }) ? white : black;
       }
     }
-  } else {
+
+    if (isMode('outlined') || isMode('text') || isMode('elevated')) {
+      return theme.colors.primary;
+    }
+
     if (isMode('contained')) {
-      if (disabled) {
-        backgroundColor = color(theme.dark ? white : black)
-          .alpha(0.12)
-          .rgb()
-          .string();
-      } else if (buttonColor) {
-        backgroundColor = buttonColor;
-      } else {
-        backgroundColor = theme.colors.primary;
-      }
-    } else {
-      backgroundColor = 'transparent';
+      return theme.colors.onPrimary;
+    }
+
+    if (isMode('contained-tonal')) {
+      return theme.colors.onSecondaryContainer;
+    }
+  }
+
+  if (disabled) {
+    return color(theme.dark ? white : black)
+      .alpha(0.32)
+      .rgb()
+      .string();
+  }
+
+  if (isMode('contained')) {
+    return isDark({ dark, backgroundColor }) ? white : black;
+  }
+
+  return theme.colors.primary;
+};
+
+const getButtonBorderColor = ({ isMode, disabled, theme }: BaseProps) => {
+  if (theme.isV3) {
+    if (disabled && isMode('outlined')) {
+      return theme.colors.surfaceDisabled;
     }
 
     if (isMode('outlined')) {
-      borderColor = color(theme.dark ? white : black)
-        .alpha(0.29)
-        .rgb()
-        .string();
-      borderWidth = StyleSheet.hairlineWidth;
-    } else {
-      borderColor = 'transparent';
-      borderWidth = 0;
-    }
-
-    if (disabled) {
-      textColor = color(theme.dark ? white : black)
-        .alpha(0.32)
-        .rgb()
-        .string();
-    } else if (isMode('contained')) {
-      let isDark;
-
-      if (typeof dark === 'boolean') {
-        isDark = dark;
-      } else {
-        isDark =
-          backgroundColor === 'transparent'
-            ? false
-            : !color(backgroundColor).isLight();
-      }
-
-      textColor = isDark ? white : black;
-    } else if (buttonColor) {
-      textColor = buttonColor;
-    } else {
-      textColor = theme.colors.primary;
+      return theme.colors.outline;
     }
   }
+
+  if (isMode('outlined')) {
+    return color(theme.dark ? white : black)
+      .alpha(0.29)
+      .rgb()
+      .string();
+  }
+
+  return 'transparent';
+};
+
+const getButtonBorderWidth = ({
+  isMode,
+  theme,
+}: Omit<BaseProps, 'disabled'>) => {
+  if (theme.isV3) {
+    if (isMode('outlined')) {
+      return 1;
+    }
+  }
+
+  if (isMode('outlined')) {
+    return StyleSheet.hairlineWidth;
+  }
+
+  return 0;
+};
+
+export const getButtonColors = ({
+  theme,
+  mode,
+  customButtonColor,
+  customTextColor,
+  disabled,
+  dark,
+}: {
+  theme: Theme;
+  mode: ButtonMode;
+  customButtonColor?: string;
+  customTextColor?: string;
+  disabled?: boolean;
+  dark?: boolean;
+}) => {
+  const isMode = (modeToCompare: ButtonMode) => {
+    return mode === modeToCompare;
+  };
+
+  const backgroundColor = getButtonBackgroundColor({
+    isMode,
+    theme,
+    disabled,
+    customButtonColor,
+  });
+
+  const textColor = getButtonTextColor({
+    isMode,
+    theme,
+    disabled,
+    customTextColor,
+    backgroundColor,
+    dark,
+  });
+
+  const borderColor = getButtonBorderColor({ isMode, theme, disabled });
+
+  const borderWidth = getButtonBorderWidth({ isMode, theme });
 
   return {
     backgroundColor,
