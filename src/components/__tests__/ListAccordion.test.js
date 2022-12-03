@@ -12,6 +12,22 @@ const styles = StyleSheet.create({
   },
 });
 
+it('renders list accordion item with title as a component', () => {
+  const Component = () => <span>adasdas</span>;
+  const tree = renderer
+    .create(
+      <ListAccordion
+        left={(props) => <ListIcon {...props} icon="folder" />}
+        title="Expandable list item"
+      >
+        <ListItem title={<Component />} />
+      </ListAccordion>
+    )
+    .toJSON();
+
+  expect(tree).toMatchSnapshot();
+});
+
 it('renders list accordion with children', () => {
   const tree = renderer
     .create(
