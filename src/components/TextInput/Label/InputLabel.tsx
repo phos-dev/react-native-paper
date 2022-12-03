@@ -1,12 +1,11 @@
 import React from 'react';
 import { Animated, StyleSheet } from 'react-native';
-import AnimatedText from '../../Typography/AnimatedText';
 
+import AnimatedText from '../../Typography/AnimatedText';
 import type { InputLabelProps } from '../types';
 
 const InputLabel = (props: InputLabelProps) => {
   const { parentState, labelBackground } = props;
-
   const {
     label,
     error,
@@ -18,6 +17,7 @@ const InputLabel = (props: InputLabelProps) => {
     baseLabelTranslateY,
     font,
     fontSize,
+    lineHeight,
     fontWeight,
     placeholderOpacity,
     wiggleOffsetX,
@@ -28,6 +28,7 @@ const InputLabel = (props: InputLabelProps) => {
     errorColor,
     labelTranslationXOffset,
     maxFontSizeMultiplier,
+    testID,
   } = props.labelProps;
 
   const labelTranslationX = {
@@ -45,6 +46,7 @@ const InputLabel = (props: InputLabelProps) => {
   const labelStyle = {
     ...font,
     fontSize,
+    lineHeight,
     fontWeight,
     transform: [
       {
@@ -70,6 +72,8 @@ const InputLabel = (props: InputLabelProps) => {
       },
     ],
   };
+
+  const textColor = error && errorColor ? errorColor : placeholderColor;
 
   return label ? (
     // Position colored placeholder and gray placeholder on top of each other and crossfade them
@@ -98,6 +102,7 @@ const InputLabel = (props: InputLabelProps) => {
         maxFontSizeMultiplier: maxFontSizeMultiplier,
       })}
       <AnimatedText
+        variant="bodySmall"
         onLayout={onLayoutAnimatedText}
         style={[
           placeholderStyle,
@@ -116,10 +121,12 @@ const InputLabel = (props: InputLabelProps) => {
         ]}
         numberOfLines={1}
         maxFontSizeMultiplier={maxFontSizeMultiplier}
+        testID={`${testID}-label-active`}
       >
         {label}
       </AnimatedText>
       <AnimatedText
+        variant={parentState.focused ? 'bodyLarge' : 'bodySmall'}
         style={[
           placeholderStyle,
           {
@@ -128,12 +135,13 @@ const InputLabel = (props: InputLabelProps) => {
           labelStyle,
           paddingOffset,
           {
-            color: error && errorColor ? errorColor : placeholderColor,
+            color: textColor,
             opacity: placeholderOpacity,
           },
         ]}
         numberOfLines={1}
         maxFontSizeMultiplier={maxFontSizeMultiplier}
+        testID={`${testID}-label-inactive`}
       >
         {label}
       </AnimatedText>

@@ -1,6 +1,7 @@
 /* @flow */
 
 import * as React from 'react';
+
 import { styled } from 'linaria/react';
 import icons from 'react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json';
 
@@ -11,7 +12,7 @@ type State = {
 export default class IconsList extends React.Component<{}, State> {
   state = { query: '' };
 
-  _getIconCharacter = (name: string) => String.fromCharCode(icons[name]);
+  _getIconCharacter = (name: string) => String.fromCodePoint(icons[name]);
 
   _getResults = () => {
     const iconNames = Object.keys(icons);

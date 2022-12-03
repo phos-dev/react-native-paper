@@ -5,8 +5,9 @@ import type {
   LayoutChangeEvent,
   ColorValue,
 } from 'react-native';
-import type { TextInputProps } from './TextInput';
+
 import type { $Omit } from './../../types';
+import type { Props as TextInputProps } from './TextInput';
 
 export type TextInputLabelProp = string | React.ReactElement;
 
@@ -25,6 +26,7 @@ export type RenderProps = {
   numberOfLines?: number;
   value?: string;
   adjustsFontSizeToFit?: boolean;
+  testID?: string;
 };
 type TextInputTypesWithoutMode = $Omit<TextInputProps, 'mode'>;
 export type State = {
@@ -51,12 +53,16 @@ export type ChildTextInputProps = {
 export type LabelProps = {
   mode?: 'flat' | 'outlined';
   placeholderStyle: any;
-  placeholderOpacity: number | Animated.Value | Animated.AnimatedInterpolation;
+  placeholderOpacity:
+    | number
+    | Animated.Value
+    | Animated.AnimatedInterpolation<number>;
   baseLabelTranslateX: number;
   baseLabelTranslateY: number;
   wiggleOffsetX: number;
   labelScale: number;
   fontSize: number;
+  lineHeight?: number | undefined;
   fontWeight: TextStyle['fontWeight'];
   font: any;
   topPosition: number;
@@ -72,6 +78,7 @@ export type LabelProps = {
   onLayoutAnimatedText: (args: any) => void;
   roundness: number;
   maxFontSizeMultiplier?: number | undefined | null;
+  testID?: string;
 };
 export type InputLabelProps = {
   parentState: State;

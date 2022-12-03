@@ -1,11 +1,13 @@
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
-import renderer from 'react-test-renderer';
 import { Text, View } from 'react-native';
-import ListItem from '../List/ListItem.tsx';
+
+import renderer from 'react-test-renderer';
+
+import { red500 } from '../../styles/themes/v2/colors';
+import Chip from '../Chip/Chip';
 import ListIcon from '../List/ListIcon.tsx';
-import Chip from '../Chip';
-import { red500 } from '../../styles/colors';
+import ListItem from '../List/ListItem.tsx';
 
 const styles = StyleSheet.create({
   title: {
@@ -93,7 +95,7 @@ it('renders list item with custom description', () => {
               Design library that has you covered in all major use-cases.
             </Text>
             <View>
-              <Chip icon="file-pdf" onPress={() => {}}>
+              <Chip icon="file-pdf-box" onPress={() => {}}>
                 DOCS.pdf
               </Chip>
             </View>

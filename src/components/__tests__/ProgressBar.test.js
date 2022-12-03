@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { View } from 'react-native';
-import { act } from 'react-native-testing-library';
-import renderer from 'react-test-renderer';
+import { Animated } from 'react-native';
+
+import { render } from '@testing-library/react-native';
+
 import ProgressBar from '../ProgressBar.tsx';
 
 const layoutEvent = {
@@ -12,37 +13,55 @@ const layoutEvent = {
   },
 };
 
+const a11Role = 'progressbar';
+
+class ClassProgressBar extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return <ProgressBar {...this.props} />;
+  }
+}
+
+const AnimatedProgressBar = Animated.createAnimatedComponent(ClassProgressBar);
+
+it('renders progress bar with animated value', () => {
+  const tree = render(<AnimatedProgressBar animatedValue={0.2} />);
+
+  const props = tree.getByRole(a11Role).props;
+  props.onLayout(layoutEvent);
+
+  tree.update(<AnimatedProgressBar animatedValue={0.4} />);
+
+  expect(tree.container.props['animatedValue']).toBe(0.4);
+});
+
 it('renders progress bar with specific progress', () => {
-  const tree = renderer.create(<ProgressBar progress={0.2} />);
-  act(() => {
-    tree.root.findByType(View).props.onLayout(layoutEvent);
-  });
+  const tree = render(<ProgressBar progress={0.2} />);
+  tree.getByRole(a11Role).props.onLayout(layoutEvent);
 
   expect(tree.toJSON()).toMatchSnapshot();
 });
 
 it('renders hidden progress bar', () => {
-  const tree = renderer.create(<ProgressBar progress={0.2} visible={false} />);
-  act(() => {
-    tree.root.findByType(View).props.onLayout(layoutEvent);
-  });
+  const tree = render(<ProgressBar progress={0.2} visible={false} />);
+  tree.getByRole(a11Role).props.onLayout(layoutEvent);
 
   expect(tree.toJSON()).toMatchSnapshot();
 });
 
 it('renders colored progress bar', () => {
-  const tree = renderer.create(<ProgressBar progress={0.2} color="red" />);
-  act(() => {
-    tree.root.findByType(View).props.onLayout(layoutEvent);
-  });
+  const tree = render(<ProgressBar progress={0.2} color="red" />);
+  tree.getByRole(a11Role).props.onLayout(layoutEvent);
 
   expect(tree.toJSON()).toMatchSnapshot();
 });
 
 it('renders indeterminate progress bar', () => {
-  const tree = renderer.create(<ProgressBar indeterminate />);
-  act(() => {
-    tree.root.findByType(View).props.onLayout(layoutEvent);
-  });
+  const tree = render(<ProgressBar indeterminate />);
+  tree.getByRole(a11Role).props.onLayout(layoutEvent);
+
   expect(tree.toJSON()).toMatchSnapshot();
 });

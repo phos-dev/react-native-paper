@@ -1,7 +1,9 @@
 import * as React from 'react';
-import { StyleSheet, StyleProp, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-type Props = React.ComponentPropsWithRef<typeof View> & {
+import { useInternalTheme } from '../../core/theming';
+
+export type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * Items inside the `CardActions`.
    */
@@ -14,7 +16,7 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
  *
  * <div class="screenshots">
  *   <figure>
- *     <img class="medium" src="screenshots/card-actions.png" />
+ *     <img class="small" src="screenshots/card-actions.png" />
  *   </figure>
  * </div>
  *
@@ -35,17 +37,29 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
  * export default MyComponent;
  * ```
  */
-const CardActions = (props: Props) => (
-  <View {...props} style={[styles.container, props.style]}>
-    {React.Children.map(props.children, (child) =>
-      React.isValidElement(child)
-        ? React.cloneElement(child, {
-            compact: child.props.compact !== false,
-          })
-        : child
-    )}
-  </View>
-);
+const CardActions = (props: Props) => {
+  const { isV3 } = useInternalTheme();
+  const justifyContent = isV3 ? 'flex-end' : 'flex-start';
+
+  return (
+    <View
+      {...props}
+      style={[styles.container, props.style, { justifyContent }]}
+    >
+      {React.Children.map(props.children, (child, i) => {
+        return React.isValidElement(child)
+          ? React.cloneElement(child as React.ReactElement<any>, {
+              compact: !isV3 && child.props.compact !== false,
+              mode:
+                child.props.mode ||
+                (isV3 && (i === 0 ? 'outlined' : 'contained')),
+              style: isV3 && styles.button,
+            })
+          : child;
+      })}
+    </View>
+  );
+};
 
 CardActions.displayName = 'Card.Actions';
 
@@ -53,8 +67,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
     padding: 8,
+  },
+  button: {
+    marginLeft: 8,
   },
 });
 

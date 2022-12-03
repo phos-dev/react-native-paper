@@ -1,24 +1,25 @@
 import * as React from 'react';
 import {
-  TouchableWithoutFeedback,
-  View,
-  ViewStyle,
-  StyleSheet,
-  StyleProp,
   GestureResponderEvent,
   Platform,
+  Pressable,
+  StyleProp,
+  StyleSheet,
+  ViewStyle,
 } from 'react-native';
-import color from 'color';
-import { withTheme } from '../../core/theming';
 
-type Props = React.ComponentPropsWithRef<typeof TouchableWithoutFeedback> & {
+import { withInternalTheme } from '../../core/theming';
+import type { InternalTheme } from '../../types';
+import { getTouchableRippleColors } from './utils';
+
+export type Props = React.ComponentPropsWithRef<typeof Pressable> & {
   /**
    * Whether to render the ripple outside the view bounds.
    */
   borderless?: boolean;
   /**
    * Type of background drawabale to display the feedback (Android).
-   * https://reactnative.dev/docs/touchablenativefeedback#background
+   * https://reactnative.dev/docs/pressable#rippleconfig
    */
   background?: Object;
   /**
@@ -53,7 +54,7 @@ type Props = React.ComponentPropsWithRef<typeof TouchableWithoutFeedback> & {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
 };
 
 /**
@@ -63,7 +64,7 @@ type Props = React.ComponentPropsWithRef<typeof TouchableWithoutFeedback> & {
  *
  * <div class="screenshots">
  *   <figure>
- *     <img class="medium" src="screenshots/touchable-ripple.gif" />
+ *     <img class="small" src="screenshots/touchable-ripple.gif" />
  *   </figure>
  * </div>
  *
@@ -85,7 +86,7 @@ type Props = React.ComponentPropsWithRef<typeof TouchableWithoutFeedback> & {
  * export default MyComponent;
  * ```
  *
- * @extends TouchableWithoutFeedback props https://reactnative.dev/docs/touchablewithoutfeedback#props
+ * @extends Pressable props https://reactnative.dev/docs/Pressable#props
  */
 const TouchableRipple = ({
   style,
@@ -103,13 +104,10 @@ const TouchableRipple = ({
 
     onPressIn?.(e);
 
-    const { dark, colors } = theme;
-    const calculatedRippleColor =
-      rippleColor ||
-      color(colors.text)
-        .alpha(dark ? 0.32 : 0.2)
-        .rgb()
-        .string();
+    const { calculatedRippleColor } = getTouchableRippleColors({
+      theme,
+      rippleColor,
+    });
 
     const button = e.currentTarget;
     const style = window.getComputedStyle(button);
@@ -232,16 +230,15 @@ const TouchableRipple = ({
   const disabled = disabledProp || !rest.onPress;
 
   return (
-    <TouchableWithoutFeedback
+    <Pressable
       {...rest}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       disabled={disabled}
+      style={[styles.touchable, borderless && styles.borderless, style]}
     >
-      <View style={[styles.touchable, borderless && styles.borderless, style]}>
-        {React.Children.only(children)}
-      </View>
-    </TouchableWithoutFeedback>
+      {React.Children.only(children)}
+    </Pressable>
   );
 };
 
@@ -260,4 +257,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(TouchableRipple);
+export default withInternalTheme(TouchableRipple);

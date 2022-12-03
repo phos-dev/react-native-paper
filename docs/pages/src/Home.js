@@ -2,8 +2,10 @@
 /* eslint-disable import/no-commonjs */
 
 import * as React from 'react';
-import { styled } from 'linaria/react';
+
 import { Link, Header } from 'component-docs/components';
+import { styled } from 'linaria/react';
+
 import ThemeIcon from '../../components/theme-icon';
 import Content from './components/Content';
 
@@ -34,7 +36,7 @@ export default class Home extends React.Component<{}> {
           <p>
             Try the demo on{' '}
             <a
-              href="https://snack.expo.dev/@react-native-paper/github.com-callstack-react-native-paper:example"
+              href="https://snack.expo.dev/@react-native-paper/react-native-paper-example_v5"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -241,8 +243,8 @@ const screenshots = [
   'gallery/button.png',
   'gallery/input.png',
   'gallery/card.png',
-  'gallery/appbar.png',
   'gallery/searchbar.png',
+  'gallery/appbar.png',
   'gallery/snackbar.png',
   'gallery/chip.png',
   'gallery/list.png',
@@ -255,8 +257,8 @@ const screenshotsDark = [
   'gallery/button-dark.png',
   'gallery/input-dark.png',
   'gallery/card-dark.png',
-  'gallery/appbar-dark.png',
   'gallery/searchbar-dark.png',
+  'gallery/appbar-dark.png',
   'gallery/snackbar-dark.png',
   'gallery/chip-dark.png',
   'gallery/list-dark.png',

@@ -1,14 +1,15 @@
 /* @flow */
 
 import * as React from 'react';
-import { styled } from 'linaria/react';
+
 import color from 'color';
 import { Header } from 'component-docs/components';
+import { styled } from 'linaria/react';
 
+import GithubIcon from '../../components/github-icon';
 import GooglePlayIcon from '../../components/google-play-icon';
 import IphoneIcon from '../../components/iphone-icon';
 import Content from './components/Content';
-import GithubIcon from '../../components/github-icon';
 
 type Data = {
   color: string,
@@ -140,6 +141,49 @@ const data: Data[] = [
     image: 'showcase/quakemap.png',
     android: 'https://play.google.com/store/apps/details?id=com.sal.quakemap',
   },
+  {
+    color: '#5222d0',
+    name: 'Homework Helper - Find HW Answers',
+    image: 'showcase/homeworkhelper.png',
+    ios: 'https://apps.apple.com/app/homework-helper-app/id1632652122',
+    android:
+      'https://play.google.com/store/apps/details?id=com.kylehoell.homeworkhelper',
+  },
+  {
+    color: '#E1352F',
+    name: 'CrazyThursday',
+    image: 'showcase/crazythursday.jpg',
+    github: 'https://github.com/shensven/Crazy-Thursday',
+    android:
+      'https://play.google.com/store/apps/details?id=com.shensven.crazythursday',
+  },
+  {
+    color: '#566193',
+    name: 'Moon Meet',
+    image: 'showcase/moonmeet.png',
+    github: 'https://github.com/MoonMeet/MoonMeet-CrossPlatform',
+  },
+  {
+    color: '#850E35',
+    name: 'Pharmacies On Duty Turkey',
+    image: 'showcase/pharmaciesondutyturkey.png',
+    android:
+      'https://play.google.com/store/apps/details?id=com.tarikfp.pharmacyfinder',
+    ios: 'https://apps.apple.com/us/app/n%C3%B6bet%C3%A7i-eczane-t%C3%BCm-t%C3%BCrkiye/id6443454675',
+  },
+  {
+    color: '#0984e3',
+    name: 'Kuroga: Make GIF by sketching',
+    image: 'showcase/kurogahome.png',
+    android:
+      'https://play.google.com/store/apps/details?id=com.personal.butterfly',
+  },
+  {
+    color: '#262a33',
+    name: 'Prodigy IoT',
+    image: 'showcase/prodigyiot.png',
+    github: 'https://github.com/lcsjunior/prodigy-rn-app-v2',
+  },
 ];
 
 export default class Showcase extends React.Component<{}> {
@@ -168,7 +212,11 @@ export default class Showcase extends React.Component<{}> {
               return (
                 <div key={item.image}>
                   <ImageContainer>
-                    <Image src={item.image} alt="" />
+                    <Image
+                      src={item.image}
+                      alt=""
+                      accessibilityIgnoresInvertColors
+                    />
                     <Info style={{ backgroundColor: item.color }}>
                       <AppName
                         style={{

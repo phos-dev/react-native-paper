@@ -1,10 +1,14 @@
 import React from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
-import { Colors, Paragraph, RadioButton } from 'react-native-paper';
+import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import type {
   AnimatedFABAnimateFrom,
   AnimatedFABIconMode,
 } from 'react-native-paper';
+import { Paragraph, RadioButton, Text } from 'react-native-paper';
+
+import { useExampleTheme } from '../..';
 
 export type Controls = {
   iconMode: AnimatedFABIconMode;
@@ -36,29 +40,43 @@ const CustomControl = ({
   value,
   onChange,
 }: CustomControlProps) => {
-  const _renderItem = React.useCallback(
-    ({ item }) => (
-      <View style={styles.controlItem}>
-        <Paragraph>{item}</Paragraph>
+  const { isV3 } = useExampleTheme();
 
-        <RadioButton
-          value="dynamic"
-          status={value === item ? 'checked' : 'unchecked'}
+  const _renderItem = React.useCallback(
+    ({ item }: ListRenderItemInfo<typeof options[number]>) => {
+      const TextComponent = isV3 ? Text : Paragraph;
+
+      return (
+        <TouchableOpacity
+          accessibilityRole="button"
           onPress={() => onChange(item)}
-        />
-      </View>
-    ),
-    [value, onChange]
+          style={styles.controlItem}
+        >
+          <TextComponent variant="labelLarge">{item}</TextComponent>
+
+          <RadioButton
+            value="dynamic"
+            status={value === item ? 'checked' : 'unchecked'}
+          />
+        </TouchableOpacity>
+      );
+    },
+    [value, onChange, isV3]
   );
 
-  const _keyExtractor = React.useCallback((item) => item, []);
+  const _keyExtractor = React.useCallback(
+    (item: typeof options[number]) => item,
+    []
+  );
+  const TextComponent = isV3 ? Text : Paragraph;
 
   return (
     <View style={styles.controlWrapper}>
-      <Paragraph>{name}</Paragraph>
+      <TextComponent variant="labelLarge">{name}</TextComponent>
 
       <FlatList
         horizontal
+        scrollEnabled={false}
         data={options}
         renderItem={_renderItem}
         keyExtractor={_keyExtractor}
@@ -72,6 +90,8 @@ const CustomFABControls = ({
   setControls,
   controls: { animateFrom, iconMode },
 }: Props) => {
+  const { colors } = useExampleTheme();
+
   const setIconMode = (newIconMode: AnimatedFABIconMode) =>
     setControls((state) => ({ ...state, iconMode: newIconMode }));
 
@@ -79,7 +99,14 @@ const CustomFABControls = ({
     setControls((state) => ({ ...state, animateFrom: newAnimateFrom }));
 
   return (
-    <View style={styles.controlsWrapper}>
+    <View
+      style={[
+        styles.controlsWrapper,
+        {
+          backgroundColor: colors.background,
+        },
+      ]}
+    >
       <CustomControl
         name="iconMode"
         options={['static', 'dynamic']}
@@ -101,13 +128,6 @@ export default CustomFABControls;
 
 const styles = StyleSheet.create({
   controlsWrapper: {
-    flex: 1,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: Colors.white,
-    paddingVertical: 12,
     paddingHorizontal: 16,
   },
   controlWrapper: {

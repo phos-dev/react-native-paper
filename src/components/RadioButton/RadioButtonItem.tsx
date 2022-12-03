@@ -1,19 +1,21 @@
 import * as React from 'react';
 import {
-  View,
-  StyleSheet,
   StyleProp,
-  ViewStyle,
+  StyleSheet,
   TextStyle,
+  View,
+  ViewStyle,
 } from 'react-native';
-import { withTheme } from '../../core/theming';
-import { RadioButtonContext, RadioButtonContextType } from './RadioButtonGroup';
-import { handlePress } from './utils';
+
+import { withInternalTheme } from '../../core/theming';
+import type { InternalTheme, MD3TypescaleKey } from '../../types';
 import TouchableRipple from '../TouchableRipple/TouchableRipple';
-import RadioButton from './RadioButton';
 import Text from '../Typography/Text';
+import RadioButton from './RadioButton';
 import RadioButtonAndroid from './RadioButtonAndroid';
+import { RadioButtonContext, RadioButtonContextType } from './RadioButtonGroup';
 import RadioButtonIOS from './RadioButtonIOS';
+import { handlePress, isChecked } from './utils';
 
 export type Props = {
   /**
@@ -57,9 +59,26 @@ export type Props = {
    */
   labelStyle?: StyleProp<TextStyle>;
   /**
+   * @supported Available in v5.x with theme version 3
+   *
+   * Label text variant defines appropriate text styles for type role and its size.
+   * Available variants:
+   *
+   *  Display: `displayLarge`, `displayMedium`, `displaySmall`
+   *
+   *  Headline: `headlineLarge`, `headlineMedium`, `headlineSmall`
+   *
+   *  Title: `titleLarge`, `titleMedium`, `titleSmall`
+   *
+   *  Label:  `labelLarge`, `labelMedium`, `labelSmall`
+   *
+   *  Body: `bodyLarge`, `bodyMedium`, `bodySmall`
+   */
+  labelVariant?: keyof typeof MD3TypescaleKey;
+  /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
   /**
    * testID to be used on tests.
    */
@@ -114,11 +133,12 @@ const RadioButtonItem = ({
   color,
   uncheckedColor,
   status,
-  theme: { colors },
-  accessibilityLabel,
+  theme,
+  accessibilityLabel = label,
   testID,
   mode,
   position = 'trailing',
+  labelVariant = 'bodyLarge',
 }: Props) => {
   const radioButtonProps = { value, disabled, status, color, uncheckedColor };
   const isLeading = position === 'leading';
@@ -132,33 +152,52 @@ const RadioButtonItem = ({
     radioButton = <RadioButton {...radioButtonProps} />;
   }
 
+  const textColor = theme.isV3 ? theme.colors.onSurface : theme.colors.text;
+  const disabledTextColor = theme.isV3
+    ? theme.colors.onSurfaceDisabled
+    : theme.colors.disabled;
+  const textAlign = isLeading ? 'right' : 'left';
+
+  const computedStyle = {
+    color: disabled ? disabledTextColor : textColor,
+    textAlign,
+  } as TextStyle;
+
   return (
     <RadioButtonContext.Consumer>
       {(context?: RadioButtonContextType) => {
+        const checked =
+          isChecked({
+            contextValue: context?.value,
+            status,
+            value,
+          }) === 'checked';
         return (
           <TouchableRipple
-            onPress={
-              disabled
-                ? undefined
-                : () =>
-                    handlePress({
-                      onPress: onPress,
-                      onValueChange: context?.onValueChange,
-                      value,
-                    })
+            onPress={() =>
+              handlePress({
+                onPress: onPress,
+                onValueChange: context?.onValueChange,
+                value,
+              })
             }
             accessibilityLabel={accessibilityLabel}
+            accessibilityRole="radio"
+            accessibilityState={{
+              checked,
+              disabled,
+            }}
             testID={testID}
+            disabled={disabled}
           >
             <View style={[styles.container, style]} pointerEvents="none">
               {isLeading && radioButton}
               <Text
+                variant={labelVariant}
                 style={[
                   styles.label,
-                  {
-                    color: colors.text,
-                    textAlign: isLeading ? 'right' : 'left',
-                  },
+                  !theme.isV3 && styles.font,
+                  computedStyle,
                   labelStyle,
                 ]}
               >
@@ -175,10 +214,10 @@ const RadioButtonItem = ({
 
 RadioButtonItem.displayName = 'RadioButton.Item';
 
-export default withTheme(RadioButtonItem);
+export default withInternalTheme(RadioButtonItem);
 
 // @component-docs ignore-next-line
-const RadioButtonItemWithTheme = withTheme(RadioButtonItem);
+const RadioButtonItemWithTheme = withInternalTheme(RadioButtonItem);
 // @component-docs ignore-next-line
 export { RadioButtonItemWithTheme as RadioButtonItem };
 
@@ -191,8 +230,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   label: {
-    fontSize: 16,
     flexShrink: 1,
     flexGrow: 1,
+  },
+  font: {
+    fontSize: 16,
   },
 });

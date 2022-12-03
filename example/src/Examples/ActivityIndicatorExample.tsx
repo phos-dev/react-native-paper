@@ -1,16 +1,25 @@
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { ActivityIndicator, Colors, FAB } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+
+import {
+  ActivityIndicator,
+  FAB,
+  MD2Colors,
+  MD3Colors,
+} from 'react-native-paper';
+
+import { useExampleTheme } from '..';
 import ScreenWrapper from '../ScreenWrapper';
 
 const ActivityIndicatorExample = () => {
   const [animating, setAnimating] = React.useState<boolean>(true);
+  const { isV3 } = useExampleTheme();
 
   return (
     <ScreenWrapper style={styles.container}>
       <View style={styles.row}>
         <FAB
-          small
+          size="small"
           icon={animating ? 'pause' : 'play'}
           onPress={() => setAnimating(!animating)}
         />
@@ -29,7 +38,10 @@ const ActivityIndicatorExample = () => {
       </View>
 
       <View style={styles.row}>
-        <ActivityIndicator animating={animating} color={Colors.red500} />
+        <ActivityIndicator
+          animating={animating}
+          color={isV3 ? MD3Colors.error20 : MD2Colors.red500}
+        />
       </View>
     </ScreenWrapper>
   );

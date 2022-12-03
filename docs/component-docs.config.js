@@ -1,7 +1,7 @@
 /* @flow */
 
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 
 const root = path.join(__dirname, '..');
 const dist = path.join(__dirname, 'dist');
@@ -9,6 +9,7 @@ const assets = [
   path.join(__dirname, 'assets', 'gallery'),
   path.join(__dirname, 'assets', 'showcase'),
   path.join(__dirname, 'assets', 'screenshots'),
+  path.join(__dirname, 'assets', 'migration'),
   path.join(__dirname, 'assets', 'images'),
 ];
 const styles = [path.join(__dirname, 'assets', 'styles.css')];
@@ -16,7 +17,7 @@ const scripts = [
   path.join(__dirname, 'assets', 'snack.js'),
   path.join(__dirname, 'assets', 'version.js'),
 ];
-const github = 'https://github.com/callstack/react-native-paper/edit/master/';
+const github = 'https://github.com/callstack/react-native-paper/edit/main/';
 
 if (!fs.existsSync(dist)) {
   fs.mkdirSync(dist);
@@ -41,6 +42,7 @@ function getPages() {
     .split('\n')
     .map((line) => line.split(' ').pop().replace(/('|;)/g, ''))
     .filter((line) => line.startsWith('./components/'))
+    .filter((line) => !line.includes('v2'))
     .map((line) => {
       const file = require.resolve(path.join(__dirname, '../src', line));
       if (/\/index\.(js|tsx?)$/.test(file)) {
@@ -120,4 +122,22 @@ module.exports = {
   output: dist,
   github,
   title: '[title] · React Native Paper',
+  colors: {
+    annotations: {
+      supported: '#6200ee',
+      deprecated: '#B00020',
+      renamed: '#006400',
+    },
+  },
+  typeDefinitions: {
+    IconSource: 'https://callstack.github.io/react-native-paper/icons.html',
+    Theme:
+      'https://callstack.github.io/react-native-paper/theming.html#theme-properties',
+    AccessibilityState:
+      'https://reactnative.dev/docs/accessibility#accessibilitystate',
+    'StyleProp<ViewStyle>': 'https://reactnative.dev/docs/view-style-props',
+    'StyleProp<TextStyle>': 'https://reactnative.dev/docs/text-style-props',
+    "ScrollViewProps['keyboardShouldPersistTaps']":
+      'https://reactnative.dev/docs/scrollview#keyboardshouldpersisttaps',
+  },
 };

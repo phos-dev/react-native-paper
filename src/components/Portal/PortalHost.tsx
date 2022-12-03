@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
+
 import PortalManager from './PortalManager';
 
-type Props = {
+export type Props = {
   children: React.ReactNode;
 };
 

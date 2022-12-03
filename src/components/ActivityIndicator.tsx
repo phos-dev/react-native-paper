@@ -8,9 +8,11 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { withTheme } from '../core/theming';
 
-type Props = React.ComponentPropsWithRef<typeof View> & {
+import { withInternalTheme } from '../core/theming';
+import type { InternalTheme } from '../types';
+
+export type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * Whether to show the indicator or hide it.
    */
@@ -31,7 +33,7 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
 };
 
 const DURATION = 2400;
@@ -47,10 +49,10 @@ const DURATION = 2400;
  * ## Usage
  * ```js
  * import * as React from 'react';
- * import { ActivityIndicator, Colors } from 'react-native-paper';
+ * import { ActivityIndicator, MD2Colors } from 'react-native-paper';
  *
  * const MyComponent = () => (
- *   <ActivityIndicator animating={true} color={Colors.red800} />
+ *   <ActivityIndicator animating={true} color={MD2Colors.red800} />
  * );
  *
  * export default MyComponent;
@@ -131,7 +133,7 @@ const ActivityIndicator = ({
     }
   }, [animating, fade, hidesWhenStopped, startRotation, scale, timer]);
 
-  const color = indicatorColor || theme.colors.primary;
+  const color = indicatorColor || theme.colors?.primary;
   const size =
     typeof indicatorSize === 'string'
       ? indicatorSize === 'small'
@@ -252,4 +254,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(ActivityIndicator);
+export default withInternalTheme(ActivityIndicator);

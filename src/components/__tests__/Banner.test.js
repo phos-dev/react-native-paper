@@ -1,12 +1,14 @@
 import * as React from 'react';
-import renderer from 'react-test-renderer';
 import { Image } from 'react-native';
+
+import renderer from 'react-test-renderer';
+
 import Banner from '../Banner.tsx';
 
 it('renders hidden banner, without action buttons and without image', () => {
   const tree = renderer
     .create(
-      <Banner visible={false} actions={[]}>
+      <Banner visible={false}>
         Two line text string with two actions. One to two lines is preferable on
         mobile.
       </Banner>
@@ -19,7 +21,7 @@ it('renders hidden banner, without action buttons and without image', () => {
 it('renders visible banner, without action buttons and without image', () => {
   const tree = renderer
     .create(
-      <Banner visible actions={[]}>
+      <Banner visible>
         Two line text string with two actions. One to two lines is preferable on
         mobile.
       </Banner>
@@ -57,9 +59,9 @@ it('renders visible banner, without action buttons and with image', () => {
           <Image
             source={{ uri: 'https://callstack.com/images/team/Satya.png' }}
             style={{ width: size, height: size }}
+            accessibilityIgnoresInvertColors
           />
         )}
-        actions={[]}
       >
         Two line text string with two actions. One to two lines is preferable on
         mobile.
@@ -79,6 +81,7 @@ it('renders visible banner, with action buttons and with image', () => {
           <Image
             source={{ uri: 'https://callstack.com/images/team/Satya.png' }}
             style={{ width: size, height: size }}
+            accessibilityIgnoresInvertColors
           />
         )}
         actions={[{ label: 'first', onPress: () => {} }]}

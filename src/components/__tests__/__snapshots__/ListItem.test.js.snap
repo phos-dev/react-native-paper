@@ -2,9 +2,17 @@
 
 exports[`renders list item with custom description 1`] = `
 <View
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
   accessible={true}
-  focusable={false}
+  collapsable={false}
+  focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -14,9 +22,11 @@ exports[`renders list item with custom description 1`] = `
   style={
     Array [
       false,
+      false,
       Array [
         Object {
-          "padding": 8,
+          "paddingRight": 24,
+          "paddingVertical": 8,
         },
         undefined,
       ],
@@ -27,6 +37,7 @@ exports[`renders list item with custom description 1`] = `
     style={
       Object {
         "flexDirection": "row",
+        "marginVertical": 6,
       }
     }
   >
@@ -34,8 +45,7 @@ exports[`renders list item with custom description 1`] = `
       style={
         Array [
           Object {
-            "marginVertical": 6,
-            "paddingLeft": 8,
+            "paddingLeft": 16,
           },
           Object {
             "flex": 1,
@@ -50,19 +60,23 @@ exports[`renders list item with custom description 1`] = `
         style={
           Array [
             Object {
-              "color": "#000000",
-              "fontFamily": "System",
-              "fontWeight": "400",
+              "textAlign": "left",
             },
             Object {
-              "textAlign": "left",
+              "color": "rgba(28, 27, 31, 1)",
+              "fontFamily": "System",
+              "fontWeight": "400",
+              "letterSpacing": 0,
+            },
+            Object {
+              "writingDirection": "ltr",
             },
             Array [
               Object {
                 "fontSize": 16,
               },
               Object {
-                "color": "rgba(0, 0, 0, 0.87)",
+                "color": "rgba(28, 27, 31, 1)",
               },
               undefined,
             ],
@@ -76,7 +90,7 @@ exports[`renders list item with custom description 1`] = `
           numberOfLines={2}
           style={
             Object {
-              "color": "rgba(0, 0, 0, 0.54)",
+              "color": "rgba(73, 69, 79, 1)",
               "fontSize": 14,
             }
           }
@@ -85,132 +99,205 @@ exports[`renders list item with custom description 1`] = `
         </Text>
         <View>
           <View
+            collapsable={false}
             style={
               Object {
-                "backgroundColor": "#ebebeb",
-                "borderColor": "#ebebeb",
-                "borderRadius": 16,
-                "borderStyle": "solid",
-                "borderWidth": 0.5,
-                "elevation": 0,
-                "flexDirection": "column",
+                "alignSelf": undefined,
+                "bottom": undefined,
+                "left": undefined,
+                "position": undefined,
+                "right": undefined,
+                "shadowColor": "#000",
+                "shadowOffset": Object {
+                  "height": 0,
+                  "width": 0,
+                },
+                "shadowOpacity": 0,
+                "shadowRadius": 0,
+                "top": undefined,
               }
             }
           >
             <View
-              accessibilityRole="button"
-              accessibilityState={
-                Object {
-                  "disabled": false,
-                  "selected": false,
-                }
-              }
-              accessible={true}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
+              collapsable={false}
               style={
-                Array [
-                  Object {
-                    "overflow": "hidden",
+                Object {
+                  "shadowColor": "#000",
+                  "shadowOffset": Object {
+                    "height": 0,
+                    "width": 0,
                   },
-                  Array [
-                    Object {
-                      "borderRadius": 16,
-                    },
-                    Object {
-                      "flexGrow": 1,
-                    },
-                  ],
-                ]
+                  "shadowOpacity": 0,
+                  "shadowRadius": 0,
+                }
               }
             >
               <View
+                collapsable={false}
                 style={
-                  Array [
-                    Object {
-                      "alignItems": "center",
-                      "flexDirection": "row",
-                      "flexGrow": 1,
-                      "paddingLeft": 4,
-                      "position": "relative",
-                    },
-                    Object {
-                      "paddingRight": 4,
-                    },
-                  ]
+                  Object {
+                    "backgroundColor": "rgba(232, 222, 248, 1)",
+                    "borderColor": "rgba(121, 116, 126, 1)",
+                    "borderRadius": 8,
+                    "borderStyle": "solid",
+                    "borderWidth": 0,
+                    "flexDirection": "column",
+                  }
                 }
               >
                 <View
-                  style={
-                    Array [
-                      Object {
-                        "alignSelf": "center",
-                        "padding": 4,
-                      },
-                      null,
-                    ]
-                  }
-                >
-                  <Text
-                    accessibilityElementsHidden={true}
-                    importantForAccessibility="no-hide-descendants"
-                    pointerEvents="none"
-                    selectable={false}
-                    style={
-                      Array [
-                        Object {
-                          "backgroundColor": "transparent",
-                        },
-                        Object {
-                          "color": "rgba(0, 0, 0, 0.54)",
-                          "fontSize": 18,
-                        },
-                      ]
+                  accessibilityRole="button"
+                  accessibilityState={
+                    Object {
+                      "disabled": false,
+                      "selected": false,
                     }
-                  >
-                    □
-                  </Text>
-                </View>
-                <Text
-                  numberOfLines={1}
-                  selectable={false}
+                  }
+                  accessible={true}
+                  collapsable={false}
+                  focusable={true}
+                  onBlur={[Function]}
+                  onClick={[Function]}
+                  onFocus={[Function]}
+                  onResponderGrant={[Function]}
+                  onResponderMove={[Function]}
+                  onResponderRelease={[Function]}
+                  onResponderTerminate={[Function]}
+                  onResponderTerminationRequest={[Function]}
+                  onStartShouldSetResponder={[Function]}
                   style={
                     Array [
                       Object {
-                        "color": "#000000",
-                        "fontFamily": "System",
-                        "fontWeight": "400",
+                        "overflow": "hidden",
                       },
-                      Object {
-                        "textAlign": "left",
-                      },
+                      false,
                       Array [
                         Object {
-                          "lineHeight": 24,
-                          "marginVertical": 4,
-                          "minHeight": 24,
-                          "textAlignVertical": "center",
+                          "borderRadius": 8,
                         },
                         Object {
-                          "color": "rgba(0, 0, 0, 0.87)",
-                          "fontFamily": "System",
-                          "fontWeight": "400",
-                          "marginLeft": 4,
-                          "marginRight": 8,
+                          "flexGrow": 1,
                         },
-                        undefined,
                       ],
                     ]
                   }
                 >
-                  DOCS.pdf
-                </Text>
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "alignItems": "center",
+                          "flexDirection": "row",
+                          "flexGrow": 1,
+                          "paddingLeft": 4,
+                          "position": "relative",
+                        },
+                        Object {
+                          "paddingLeft": 0,
+                        },
+                        Object {
+                          "paddingRight": 0,
+                        },
+                      ]
+                    }
+                  >
+                    <View
+                      style={
+                        Array [
+                          Object {
+                            "alignSelf": "center",
+                            "padding": 4,
+                          },
+                          Object {
+                            "paddingLeft": 8,
+                            "paddingRight": 0,
+                          },
+                          null,
+                        ]
+                      }
+                    >
+                      <Text
+                        accessibilityElementsHidden={true}
+                        allowFontScaling={false}
+                        importantForAccessibility="no-hide-descendants"
+                        pointerEvents="none"
+                        selectable={false}
+                        style={
+                          Array [
+                            Object {
+                              "color": "rgba(103, 80, 164, 1)",
+                              "fontSize": 18,
+                            },
+                            Array [
+                              Object {
+                                "lineHeight": 18,
+                                "transform": Array [
+                                  Object {
+                                    "scaleX": 1,
+                                  },
+                                ],
+                              },
+                              Object {
+                                "backgroundColor": "transparent",
+                              },
+                            ],
+                            Object {
+                              "fontFamily": "Material Design Icons",
+                              "fontStyle": "normal",
+                              "fontWeight": "normal",
+                            },
+                            Object {},
+                          ]
+                        }
+                      >
+                        󰈦
+                      </Text>
+                    </View>
+                    <Text
+                      numberOfLines={1}
+                      selectable={false}
+                      style={
+                        Array [
+                          Object {
+                            "color": "rgba(28, 27, 31, 1)",
+                            "fontFamily": "System",
+                            "fontSize": 14,
+                            "fontWeight": "500",
+                            "letterSpacing": 0.1,
+                            "lineHeight": 20,
+                          },
+                          Object {
+                            "textAlign": "left",
+                          },
+                          Object {
+                            "writingDirection": "ltr",
+                          },
+                          Array [
+                            Object {
+                              "marginVertical": 6,
+                              "textAlignVertical": "center",
+                            },
+                            Object {
+                              "color": "rgba(29, 25, 43, 1)",
+                              "fontFamily": "System",
+                              "fontSize": 14,
+                              "fontWeight": "500",
+                              "letterSpacing": 0.1,
+                              "lineHeight": 20,
+                            },
+                            Object {
+                              "marginLeft": 8,
+                              "marginRight": 16,
+                            },
+                            undefined,
+                          ],
+                        ]
+                      }
+                    >
+                      DOCS.pdf
+                    </Text>
+                  </View>
+                </View>
               </View>
             </View>
           </View>
@@ -223,9 +310,17 @@ exports[`renders list item with custom description 1`] = `
 
 exports[`renders list item with custom title and description styles 1`] = `
 <View
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
   accessible={true}
-  focusable={false}
+  collapsable={false}
+  focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -235,9 +330,11 @@ exports[`renders list item with custom title and description styles 1`] = `
   style={
     Array [
       false,
+      false,
       Array [
         Object {
-          "padding": 8,
+          "paddingRight": 24,
+          "paddingVertical": 8,
         },
         undefined,
       ],
@@ -248,6 +345,7 @@ exports[`renders list item with custom title and description styles 1`] = `
     style={
       Object {
         "flexDirection": "row",
+        "marginVertical": 6,
       }
     }
   >
@@ -255,8 +353,7 @@ exports[`renders list item with custom title and description styles 1`] = `
       style={
         Array [
           Object {
-            "marginVertical": 6,
-            "paddingLeft": 8,
+            "paddingLeft": 16,
           },
           Object {
             "flex": 1,
@@ -271,19 +368,23 @@ exports[`renders list item with custom title and description styles 1`] = `
         style={
           Array [
             Object {
-              "color": "#000000",
-              "fontFamily": "System",
-              "fontWeight": "400",
+              "textAlign": "left",
             },
             Object {
-              "textAlign": "left",
+              "color": "rgba(28, 27, 31, 1)",
+              "fontFamily": "System",
+              "fontWeight": "400",
+              "letterSpacing": 0,
+            },
+            Object {
+              "writingDirection": "ltr",
             },
             Array [
               Object {
                 "fontSize": 16,
               },
               Object {
-                "color": "rgba(0, 0, 0, 0.87)",
+                "color": "rgba(28, 27, 31, 1)",
               },
               Object {
                 "fontSize": 20,
@@ -296,23 +397,28 @@ exports[`renders list item with custom title and description styles 1`] = `
       </Text>
       <Text
         numberOfLines={2}
+        onTextLayout={[Function]}
         selectable={false}
         style={
           Array [
             Object {
-              "color": "#000000",
-              "fontFamily": "System",
-              "fontWeight": "400",
+              "textAlign": "left",
             },
             Object {
-              "textAlign": "left",
+              "color": "rgba(28, 27, 31, 1)",
+              "fontFamily": "System",
+              "fontWeight": "400",
+              "letterSpacing": 0,
+            },
+            Object {
+              "writingDirection": "ltr",
             },
             Array [
               Object {
                 "fontSize": 14,
               },
               Object {
-                "color": "rgba(0, 0, 0, 0.54)",
+                "color": "rgba(73, 69, 79, 1)",
               },
               Object {
                 "color": "#f44336",
@@ -330,9 +436,17 @@ exports[`renders list item with custom title and description styles 1`] = `
 
 exports[`renders list item with left and right items 1`] = `
 <View
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
   accessible={true}
-  focusable={false}
+  collapsable={false}
+  focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -342,9 +456,11 @@ exports[`renders list item with left and right items 1`] = `
   style={
     Array [
       false,
+      false,
       Array [
         Object {
-          "padding": 8,
+          "paddingRight": 24,
+          "paddingVertical": 8,
         },
         undefined,
       ],
@@ -355,6 +471,7 @@ exports[`renders list item with left and right items 1`] = `
     style={
       Object {
         "flexDirection": "row",
+        "marginVertical": 6,
       }
     }
   >
@@ -365,8 +482,7 @@ exports[`renders list item with left and right items 1`] = `
       style={
         Array [
           Object {
-            "marginVertical": 6,
-            "paddingLeft": 8,
+            "paddingLeft": 16,
           },
           Object {
             "flex": 1,
@@ -381,19 +497,23 @@ exports[`renders list item with left and right items 1`] = `
         style={
           Array [
             Object {
-              "color": "#000000",
-              "fontFamily": "System",
-              "fontWeight": "400",
+              "textAlign": "left",
             },
             Object {
-              "textAlign": "left",
+              "color": "rgba(28, 27, 31, 1)",
+              "fontFamily": "System",
+              "fontWeight": "400",
+              "letterSpacing": 0,
+            },
+            Object {
+              "writingDirection": "ltr",
             },
             Array [
               Object {
                 "fontSize": 16,
               },
               Object {
-                "color": "rgba(0, 0, 0, 0.87)",
+                "color": "rgba(28, 27, 31, 1)",
               },
               undefined,
             ],
@@ -404,23 +524,28 @@ exports[`renders list item with left and right items 1`] = `
       </Text>
       <Text
         numberOfLines={2}
+        onTextLayout={[Function]}
         selectable={false}
         style={
           Array [
             Object {
-              "color": "#000000",
-              "fontFamily": "System",
-              "fontWeight": "400",
+              "textAlign": "left",
             },
             Object {
-              "textAlign": "left",
+              "color": "rgba(28, 27, 31, 1)",
+              "fontFamily": "System",
+              "fontWeight": "400",
+              "letterSpacing": 0,
+            },
+            Object {
+              "writingDirection": "ltr",
             },
             Array [
               Object {
                 "fontSize": 14,
               },
               Object {
-                "color": "rgba(0, 0, 0, 0.54)",
+                "color": "rgba(73, 69, 79, 1)",
               },
               undefined,
             ],
@@ -436,12 +561,11 @@ exports[`renders list item with left and right items 1`] = `
         Array [
           Object {
             "alignItems": "center",
-            "height": 40,
             "justifyContent": "center",
-            "margin": 8,
-            "width": 40,
           },
           Object {
+            "alignSelf": "center",
+            "marginLeft": 16,
             "marginRight": 0,
           },
         ]
@@ -449,22 +573,39 @@ exports[`renders list item with left and right items 1`] = `
     >
       <Text
         accessibilityElementsHidden={true}
+        allowFontScaling={false}
         importantForAccessibility="no-hide-descendants"
         pointerEvents="none"
         selectable={false}
         style={
           Array [
             Object {
-              "backgroundColor": "transparent",
-            },
-            Object {
-              "color": "rgba(0, 0, 0, 0.54)",
+              "color": "rgba(73, 69, 79, 1)",
               "fontSize": 24,
             },
+            Array [
+              Object {
+                "lineHeight": 24,
+                "transform": Array [
+                  Object {
+                    "scaleX": 1,
+                  },
+                ],
+              },
+              Object {
+                "backgroundColor": "transparent",
+              },
+            ],
+            Object {
+              "fontFamily": "Material Design Icons",
+              "fontStyle": "normal",
+              "fontWeight": "normal",
+            },
+            Object {},
           ]
         }
       >
-        □
+        󰉋
       </Text>
     </View>
   </View>
@@ -473,9 +614,17 @@ exports[`renders list item with left and right items 1`] = `
 
 exports[`renders list item with left item 1`] = `
 <View
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
   accessible={true}
-  focusable={false}
+  collapsable={false}
+  focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -485,9 +634,11 @@ exports[`renders list item with left item 1`] = `
   style={
     Array [
       false,
+      false,
       Array [
         Object {
-          "padding": 8,
+          "paddingRight": 24,
+          "paddingVertical": 8,
         },
         undefined,
       ],
@@ -498,6 +649,7 @@ exports[`renders list item with left item 1`] = `
     style={
       Object {
         "flexDirection": "row",
+        "marginVertical": 6,
       }
     }
   >
@@ -507,14 +659,12 @@ exports[`renders list item with left item 1`] = `
         Array [
           Object {
             "alignItems": "center",
-            "height": 40,
             "justifyContent": "center",
-            "margin": 8,
-            "width": 40,
           },
           Object {
-            "marginLeft": 0,
-            "marginRight": 16,
+            "alignSelf": "center",
+            "marginLeft": 16,
+            "marginRight": 0,
             "marginVertical": 0,
           },
         ]
@@ -522,30 +672,46 @@ exports[`renders list item with left item 1`] = `
     >
       <Text
         accessibilityElementsHidden={true}
+        allowFontScaling={false}
         importantForAccessibility="no-hide-descendants"
         pointerEvents="none"
         selectable={false}
         style={
           Array [
             Object {
-              "backgroundColor": "transparent",
-            },
-            Object {
-              "color": "rgba(0, 0, 0, 0.54)",
+              "color": "rgba(73, 69, 79, 1)",
               "fontSize": 24,
             },
+            Array [
+              Object {
+                "lineHeight": 24,
+                "transform": Array [
+                  Object {
+                    "scaleX": 1,
+                  },
+                ],
+              },
+              Object {
+                "backgroundColor": "transparent",
+              },
+            ],
+            Object {
+              "fontFamily": "Material Design Icons",
+              "fontStyle": "normal",
+              "fontWeight": "normal",
+            },
+            Object {},
           ]
         }
       >
-        □
+        󰉋
       </Text>
     </View>
     <View
       style={
         Array [
           Object {
-            "marginVertical": 6,
-            "paddingLeft": 8,
+            "paddingLeft": 16,
           },
           Object {
             "flex": 1,
@@ -560,19 +726,23 @@ exports[`renders list item with left item 1`] = `
         style={
           Array [
             Object {
-              "color": "#000000",
-              "fontFamily": "System",
-              "fontWeight": "400",
+              "textAlign": "left",
             },
             Object {
-              "textAlign": "left",
+              "color": "rgba(28, 27, 31, 1)",
+              "fontFamily": "System",
+              "fontWeight": "400",
+              "letterSpacing": 0,
+            },
+            Object {
+              "writingDirection": "ltr",
             },
             Array [
               Object {
                 "fontSize": 16,
               },
               Object {
-                "color": "rgba(0, 0, 0, 0.87)",
+                "color": "rgba(28, 27, 31, 1)",
               },
               undefined,
             ],
@@ -588,9 +758,17 @@ exports[`renders list item with left item 1`] = `
 
 exports[`renders list item with right item 1`] = `
 <View
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
   accessible={true}
-  focusable={false}
+  collapsable={false}
+  focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -600,9 +778,11 @@ exports[`renders list item with right item 1`] = `
   style={
     Array [
       false,
+      false,
       Array [
         Object {
-          "padding": 8,
+          "paddingRight": 24,
+          "paddingVertical": 8,
         },
         undefined,
       ],
@@ -613,6 +793,7 @@ exports[`renders list item with right item 1`] = `
     style={
       Object {
         "flexDirection": "row",
+        "marginVertical": 6,
       }
     }
   >
@@ -620,8 +801,7 @@ exports[`renders list item with right item 1`] = `
       style={
         Array [
           Object {
-            "marginVertical": 6,
-            "paddingLeft": 8,
+            "paddingLeft": 16,
           },
           Object {
             "flex": 1,
@@ -636,19 +816,23 @@ exports[`renders list item with right item 1`] = `
         style={
           Array [
             Object {
-              "color": "#000000",
-              "fontFamily": "System",
-              "fontWeight": "400",
+              "textAlign": "left",
             },
             Object {
-              "textAlign": "left",
+              "color": "rgba(28, 27, 31, 1)",
+              "fontFamily": "System",
+              "fontWeight": "400",
+              "letterSpacing": 0,
+            },
+            Object {
+              "writingDirection": "ltr",
             },
             Array [
               Object {
                 "fontSize": 16,
               },
               Object {
-                "color": "rgba(0, 0, 0, 0.87)",
+                "color": "rgba(28, 27, 31, 1)",
               },
               undefined,
             ],
@@ -667,9 +851,17 @@ exports[`renders list item with right item 1`] = `
 
 exports[`renders list item with title and description 1`] = `
 <View
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
   accessible={true}
-  focusable={false}
+  collapsable={false}
+  focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -679,9 +871,11 @@ exports[`renders list item with title and description 1`] = `
   style={
     Array [
       false,
+      false,
       Array [
         Object {
-          "padding": 8,
+          "paddingRight": 24,
+          "paddingVertical": 8,
         },
         undefined,
       ],
@@ -692,6 +886,7 @@ exports[`renders list item with title and description 1`] = `
     style={
       Object {
         "flexDirection": "row",
+        "marginVertical": 6,
       }
     }
   >
@@ -699,8 +894,7 @@ exports[`renders list item with title and description 1`] = `
       style={
         Array [
           Object {
-            "marginVertical": 6,
-            "paddingLeft": 8,
+            "paddingLeft": 16,
           },
           Object {
             "flex": 1,
@@ -715,19 +909,23 @@ exports[`renders list item with title and description 1`] = `
         style={
           Array [
             Object {
-              "color": "#000000",
-              "fontFamily": "System",
-              "fontWeight": "400",
+              "textAlign": "left",
             },
             Object {
-              "textAlign": "left",
+              "color": "rgba(28, 27, 31, 1)",
+              "fontFamily": "System",
+              "fontWeight": "400",
+              "letterSpacing": 0,
+            },
+            Object {
+              "writingDirection": "ltr",
             },
             Array [
               Object {
                 "fontSize": 16,
               },
               Object {
-                "color": "rgba(0, 0, 0, 0.87)",
+                "color": "rgba(28, 27, 31, 1)",
               },
               undefined,
             ],
@@ -738,23 +936,28 @@ exports[`renders list item with title and description 1`] = `
       </Text>
       <Text
         numberOfLines={2}
+        onTextLayout={[Function]}
         selectable={false}
         style={
           Array [
             Object {
-              "color": "#000000",
-              "fontFamily": "System",
-              "fontWeight": "400",
+              "textAlign": "left",
             },
             Object {
-              "textAlign": "left",
+              "color": "rgba(28, 27, 31, 1)",
+              "fontFamily": "System",
+              "fontWeight": "400",
+              "letterSpacing": 0,
+            },
+            Object {
+              "writingDirection": "ltr",
             },
             Array [
               Object {
                 "fontSize": 14,
               },
               Object {
-                "color": "rgba(0, 0, 0, 0.54)",
+                "color": "rgba(73, 69, 79, 1)",
               },
               undefined,
             ],
@@ -770,9 +973,17 @@ exports[`renders list item with title and description 1`] = `
 
 exports[`renders with a description with typeof number 1`] = `
 <View
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
   accessible={true}
-  focusable={false}
+  collapsable={false}
+  focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -782,9 +993,11 @@ exports[`renders with a description with typeof number 1`] = `
   style={
     Array [
       false,
+      false,
       Array [
         Object {
-          "padding": 8,
+          "paddingRight": 24,
+          "paddingVertical": 8,
         },
         undefined,
       ],
@@ -795,6 +1008,7 @@ exports[`renders with a description with typeof number 1`] = `
     style={
       Object {
         "flexDirection": "row",
+        "marginVertical": 6,
       }
     }
   >
@@ -802,8 +1016,7 @@ exports[`renders with a description with typeof number 1`] = `
       style={
         Array [
           Object {
-            "marginVertical": 6,
-            "paddingLeft": 8,
+            "paddingLeft": 16,
           },
           Object {
             "flex": 1,
@@ -818,19 +1031,23 @@ exports[`renders with a description with typeof number 1`] = `
         style={
           Array [
             Object {
-              "color": "#000000",
-              "fontFamily": "System",
-              "fontWeight": "400",
+              "textAlign": "left",
             },
             Object {
-              "textAlign": "left",
+              "color": "rgba(28, 27, 31, 1)",
+              "fontFamily": "System",
+              "fontWeight": "400",
+              "letterSpacing": 0,
+            },
+            Object {
+              "writingDirection": "ltr",
             },
             Array [
               Object {
                 "fontSize": 16,
               },
               Object {
-                "color": "rgba(0, 0, 0, 0.87)",
+                "color": "rgba(28, 27, 31, 1)",
               },
               Object {
                 "fontSize": 20,
@@ -843,23 +1060,28 @@ exports[`renders with a description with typeof number 1`] = `
       </Text>
       <Text
         numberOfLines={2}
+        onTextLayout={[Function]}
         selectable={false}
         style={
           Array [
             Object {
-              "color": "#000000",
-              "fontFamily": "System",
-              "fontWeight": "400",
+              "textAlign": "left",
             },
             Object {
-              "textAlign": "left",
+              "color": "rgba(28, 27, 31, 1)",
+              "fontFamily": "System",
+              "fontWeight": "400",
+              "letterSpacing": 0,
+            },
+            Object {
+              "writingDirection": "ltr",
             },
             Array [
               Object {
                 "fontSize": 14,
               },
               Object {
-                "color": "rgba(0, 0, 0, 0.54)",
+                "color": "rgba(73, 69, 79, 1)",
               },
               Object {
                 "color": "#f44336",

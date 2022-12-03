@@ -1,22 +1,23 @@
-import color from 'color';
 import * as React from 'react';
 import {
+  GestureResponderEvent,
+  I18nManager,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
   View,
   ViewStyle,
-  StyleSheet,
-  StyleProp,
-  TextStyle,
-  I18nManager,
-  GestureResponderEvent,
 } from 'react-native';
-import TouchableRipple from '../TouchableRipple/TouchableRipple';
+
+import { withInternalTheme } from '../../core/theming';
+import type { InternalTheme } from '../../types';
 import MaterialCommunityIcon from '../MaterialCommunityIcon';
+import TouchableRipple from '../TouchableRipple/TouchableRipple';
 import Text from '../Typography/Text';
-import { withTheme } from '../../core/theming';
-
 import { ListAccordionGroupContext } from './ListAccordionGroup';
+import { getAccordionColors } from './utils';
 
-type Props = {
+export type Props = {
   /**
    * Title text for the list accordion.
    */
@@ -54,7 +55,7 @@ type Props = {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
   /**
    * Style that is passed to the wrapping TouchableRipple element.
    */
@@ -167,9 +168,6 @@ const ListAccordion = ({
     }
   };
 
-  const titleColor = color(theme.colors.text).alpha(0.87).rgb().string();
-  const descriptionColor = color(theme.colors.text).alpha(0.54).rgb().string();
-
   const expandedInternal = expandedProp !== undefined ? expandedProp : expanded;
 
   const groupContext = React.useContext(ListAccordionGroupContext);
@@ -181,31 +179,35 @@ const ListAccordion = ({
   const isExpanded = groupContext
     ? groupContext.expandedId === id
     : expandedInternal;
+
+  const { titleColor, descriptionColor, titleTextColor, rippleColor } =
+    getAccordionColors({
+      theme,
+      isExpanded,
+    });
+
   const handlePress =
     groupContext && id !== undefined
       ? () => groupContext.onAccordionPress(id)
       : handlePressAction;
   return (
     <View>
-      <View style={{ backgroundColor: theme.colors.background }}>
+      <View style={{ backgroundColor: theme?.colors?.background }}>
         <TouchableRipple
           style={[styles.container, style]}
           onPress={handlePress}
           onLongPress={onLongPress}
-          // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
-          accessibilityTraits="button"
-          accessibilityComponentType="button"
+          rippleColor={rippleColor}
           accessibilityRole="button"
           accessibilityState={{ expanded: isExpanded }}
           accessibilityLabel={accessibilityLabel}
           testID={testID}
-          delayPressIn={0}
           borderless
         >
           <View style={styles.row} pointerEvents="none">
             {left
               ? left({
-                  color: isExpanded ? theme.colors.primary : descriptionColor,
+                  color: isExpanded ? theme.colors?.primary : descriptionColor,
                 })
               : null}
             <View style={[styles.item, styles.content]}>
@@ -252,9 +254,9 @@ const ListAccordion = ({
               ) : (
                 <MaterialCommunityIcon
                   name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                  color={titleColor}
+                  color={theme.isV3 ? descriptionColor : titleColor}
                   size={24}
-                  direction={I18nManager.isRTL ? 'rtl' : 'ltr'}
+                  direction={I18nManager.getConstants().isRTL ? 'rtl' : 'ltr'}
                 />
               )}
             </View>
@@ -270,7 +272,7 @@ const ListAccordion = ({
               !child.props.left &&
               !child.props.right
             ) {
-              return React.cloneElement(child, {
+              return React.cloneElement(child as React.ReactElement<any>, {
                 style: [styles.child, child.props.style],
               });
             }
@@ -315,4 +317,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(ListAccordion);
+export default withInternalTheme(ListAccordion);

@@ -8,16 +8,20 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+
 import color from 'color';
 
+import { withInternalTheme } from '../../core/theming';
+import { white } from '../../styles/themes/v2/colors';
+import type {
+  $RemoveChildren,
+  InternalTheme,
+  MD3TypescaleKey,
+} from '../../types';
 import Text from '../Typography/Text';
+import { modeTextVariant } from './utils';
 
-import { withTheme } from '../../core/theming';
-import { white } from '../../styles/colors';
-
-import type { $RemoveChildren } from '../../types';
-
-type Props = $RemoveChildren<typeof View> & {
+export type Props = $RemoveChildren<typeof View> & {
   /**
    * Custom color for the text.
    */
@@ -35,10 +39,12 @@ type Props = $RemoveChildren<typeof View> & {
    */
   titleRef?: React.RefObject<Text>;
   /**
+   * @deprecated Deprecated in v5.x
    * Text for the subtitle.
    */
   subtitle?: React.ReactNode;
   /**
+   * @deprecated Deprecated in v5.x
    * Style for the subtitle.
    */
   subtitleStyle?: StyleProp<TextStyle>;
@@ -46,20 +52,22 @@ type Props = $RemoveChildren<typeof View> & {
    * Function to execute on press.
    */
   onPress?: () => void;
+  /**
+   * @internal
+   */
+  mode?: 'small' | 'medium' | 'large' | 'center-aligned';
   style?: StyleProp<ViewStyle>;
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
 };
 
 /**
  * A component used to display a title and optional subtitle in an appbar.
  *
  * <div class="screenshots">
- *   <figure>
- *     <img class="medium" src="screenshots/appbar-content.png" />
- *   </figure>
+ *   <img class="small" src="screenshots/appbar-content.png" />
  * </div>
  *
  * ## Usage
@@ -69,7 +77,7 @@ type Props = $RemoveChildren<typeof View> & {
  *
  * const MyComponent = () => (
  *     <Appbar.Header>
- *        <Appbar.Content title="Title" subtitle={'Subtitle'} />
+ *        <Appbar.Content title="Title" />
  *     </Appbar.Header>
  * );
  *
@@ -77,7 +85,7 @@ type Props = $RemoveChildren<typeof View> & {
  * ```
  */
 const AppbarContent = ({
-  color: titleColor = white,
+  color: titleColor,
   subtitle,
   subtitleStyle,
   onPress,
@@ -86,34 +94,62 @@ const AppbarContent = ({
   titleStyle,
   theme,
   title,
+  mode = 'small',
   ...rest
 }: Props) => {
-  const { fonts } = theme;
+  const { isV3, colors } = theme;
 
-  const subtitleColor = color(titleColor).alpha(0.7).rgb().string();
+  const titleTextColor = titleColor
+    ? titleColor
+    : isV3
+    ? colors.onSurface
+    : white;
+
+  const subtitleColor = color(titleTextColor).alpha(0.7).rgb().string();
+
+  const modeContainerStyles = {
+    small: styles.v3DefaultContainer,
+    medium: styles.v3MediumContainer,
+    large: styles.v3LargeContainer,
+    'center-aligned': styles.v3DefaultContainer,
+  };
+
+  const variant = modeTextVariant[mode] as MD3TypescaleKey;
 
   return (
-    <TouchableWithoutFeedback onPress={onPress} disabled={!onPress}>
-      <View style={[styles.container, style]} {...rest}>
+    <TouchableWithoutFeedback
+      accessibilityRole="button"
+      onPress={onPress}
+      disabled={!onPress}
+    >
+      <View
+        pointerEvents="box-none"
+        style={[styles.container, isV3 && modeContainerStyles[mode], style]}
+        {...rest}
+      >
         <Text
+          {...(isV3 && { variant })}
           ref={titleRef}
           style={[
             {
-              color: titleColor,
-              ...(Platform.OS === 'ios' ? fonts.regular : fonts.medium),
+              color: titleTextColor,
+              ...(isV3
+                ? theme.fonts[variant]
+                : Platform.OS === 'ios'
+                ? theme.fonts.regular
+                : theme.fonts.medium),
             },
-            styles.title,
+            !isV3 && styles.title,
             titleStyle,
           ]}
           numberOfLines={1}
           accessible
-          accessibilityTraits="header"
-          // @ts-expect-error React Native doesn't accept 'heading' as it's web-only
+          // @ts-ignore Type '"heading"' is not assignable to type ...
           accessibilityRole={Platform.OS === 'web' ? 'heading' : 'header'}
         >
           {title}
         </Text>
-        {subtitle ? (
+        {!isV3 && subtitle ? (
           <Text
             style={[styles.subtitle, { color: subtitleColor }, subtitleStyle]}
             numberOfLines={1}
@@ -133,6 +169,20 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 12,
   },
+  v3DefaultContainer: {
+    paddingHorizontal: 0,
+  },
+  v3MediumContainer: {
+    paddingHorizontal: 0,
+    justifyContent: 'flex-end',
+    paddingBottom: 24,
+  },
+  v3LargeContainer: {
+    paddingHorizontal: 0,
+    paddingTop: 36,
+    justifyContent: 'flex-end',
+    paddingBottom: 28,
+  },
   title: {
     fontSize: Platform.OS === 'ios' ? 17 : 20,
   },
@@ -141,9 +191,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(AppbarContent);
+export default withInternalTheme(AppbarContent);
 
 // @component-docs ignore-next-line
-const AppbarContentWithTheme = withTheme(AppbarContent);
+const AppbarContentWithTheme = withInternalTheme(AppbarContent);
 // @component-docs ignore-next-line
 export { AppbarContentWithTheme as AppbarContent };

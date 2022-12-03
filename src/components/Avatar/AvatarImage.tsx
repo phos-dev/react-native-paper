@@ -1,14 +1,16 @@
 import * as React from 'react';
 import {
   Image,
-  ImageSourcePropType,
   ImageProps,
+  ImageSourcePropType,
+  StyleProp,
   StyleSheet,
   View,
   ViewStyle,
-  StyleProp,
 } from 'react-native';
-import { withTheme } from '../../core/theming';
+
+import { withInternalTheme } from '../../core/theming';
+import type { InternalTheme } from '../../types';
 
 const defaultSize = 64;
 
@@ -16,7 +18,7 @@ export type AvatarImageSource =
   | ImageSourcePropType
   | ((props: { size: number }) => React.ReactNode);
 
-type Props = React.ComponentPropsWithRef<typeof View> & {
+export type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * Image to display for the `Avatar`.
    * It accepts a standard React Native Image `source` prop
@@ -55,7 +57,7 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
 };
 
 /**
@@ -93,7 +95,7 @@ const AvatarImage = ({
 }: Props) => {
   const { colors } = theme;
 
-  const { backgroundColor = colors.primary } = StyleSheet.flatten(style) || {};
+  const { backgroundColor = colors?.primary } = StyleSheet.flatten(style) || {};
 
   return (
     <View
@@ -119,6 +121,7 @@ const AvatarImage = ({
           onLoadEnd={onLoadEnd}
           onLoadStart={onLoadStart}
           onProgress={onProgress}
+          accessibilityIgnoresInvertColors
         />
       )}
     </View>
@@ -127,4 +130,4 @@ const AvatarImage = ({
 
 AvatarImage.displayName = 'Avatar.Image';
 
-export default withTheme(AvatarImage);
+export default withInternalTheme(AvatarImage);

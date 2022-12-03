@@ -1,6 +1,8 @@
 import * as React from 'react';
+
+import { render } from '@testing-library/react-native';
 import renderer from 'react-test-renderer';
-import { render } from 'react-native-testing-library';
+
 import DataTable from '../DataTable/DataTable.tsx';
 
 it('renders data table header', () => {
@@ -92,7 +94,7 @@ it('renders data table pagination with label', () => {
 });
 
 it('renders data table pagination with fast-forward buttons', () => {
-  const { getByA11yLabel, toJSON } = render(
+  const { getByLabelText, toJSON } = render(
     <DataTable.Pagination
       page={3}
       numberOfPages={15}
@@ -102,13 +104,13 @@ it('renders data table pagination with fast-forward buttons', () => {
     />
   );
 
-  expect(() => getByA11yLabel('page-first')).not.toThrow();
-  expect(() => getByA11yLabel('page-last')).not.toThrow();
+  expect(getByLabelText('page-first')).toBeTruthy();
+  expect(getByLabelText('page-last')).toBeTruthy();
   expect(toJSON()).toMatchSnapshot();
 });
 
 it('renders data table pagination without options select', () => {
-  const { getByA11yLabel } = render(
+  const { queryByLabelText } = render(
     <DataTable.Pagination
       page={3}
       numberOfPages={15}
@@ -118,11 +120,11 @@ it('renders data table pagination without options select', () => {
     />
   );
 
-  expect(() => getByA11yLabel('Options Select')).toThrow();
+  expect(queryByLabelText('Options Select')).toBeFalsy();
 });
 
 it('renders data table pagination with options select', () => {
-  const { getByA11yLabel, toJSON } = render(
+  const { getByLabelText, toJSON } = render(
     <DataTable.Pagination
       page={3}
       numberOfPages={15}
@@ -136,8 +138,8 @@ it('renders data table pagination with options select', () => {
     />
   );
 
-  expect(() => getByA11yLabel('Options Select')).not.toThrow();
-  expect(() => getByA11yLabel('selectPageDropdownLabel')).not.toThrow();
+  expect(getByLabelText('Options Select')).toBeTruthy();
+  expect(getByLabelText('selectPageDropdownLabel')).toBeTruthy();
 
   expect(toJSON()).toMatchSnapshot();
 });

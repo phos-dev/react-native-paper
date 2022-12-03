@@ -1,13 +1,15 @@
 import * as React from 'react';
 import {
-  Image,
   I18nManager,
-  Platform,
+  Image,
   ImageSourcePropType,
+  Platform,
 } from 'react-native';
+
 import { Consumer as SettingsConsumer } from '../core/settings';
+import { withInternalTheme } from '../core/theming';
+import type { InternalTheme } from '../types';
 import { accessibilityProps } from './MaterialCommunityIcon';
-import { withTheme } from '../core/theming';
 
 type IconSourceBase = string | ImageSourcePropType;
 
@@ -27,7 +29,7 @@ type Props = IconProps & {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
 };
 
 const isImageSource = (source: any) =>
@@ -69,7 +71,7 @@ const Icon = ({ source, color, size, theme, ...rest }: Props) => {
   const direction =
     typeof source === 'object' && source.direction && source.source
       ? source.direction === 'auto'
-        ? I18nManager.isRTL
+        ? I18nManager.getConstants().isRTL
           ? 'rtl'
           : 'ltr'
         : source.direction
@@ -78,7 +80,8 @@ const Icon = ({ source, color, size, theme, ...rest }: Props) => {
     typeof source === 'object' && source.direction && source.source
       ? source.source
       : source;
-  const iconColor = color || theme.colors.text;
+  const iconColor =
+    color || (theme.isV3 ? theme.colors.onSurface : theme.colors.text);
 
   if (isImageSource(s)) {
     return (
@@ -89,7 +92,6 @@ const Icon = ({ source, color, size, theme, ...rest }: Props) => {
           {
             transform: [{ scaleX: direction === 'rtl' ? -1 : 1 }],
           },
-          // eslint-disable-next-line react-native/no-inline-styles
           {
             width: size,
             height: size,
@@ -98,6 +100,7 @@ const Icon = ({ source, color, size, theme, ...rest }: Props) => {
           },
         ]}
         {...accessibilityProps}
+        accessibilityIgnoresInvertColors
       />
     );
   } else if (typeof s === 'string') {
@@ -120,4 +123,4 @@ const Icon = ({ source, color, size, theme, ...rest }: Props) => {
   return null;
 };
 
-export default withTheme(Icon);
+export default withInternalTheme(Icon);

@@ -1,7 +1,10 @@
 import * as React from 'react';
-import { Paragraph, Button, Portal, Dialog, Colors } from 'react-native-paper';
 
-const DialogWithLongText = ({
+import { Button, Portal, Dialog, MD2Colors } from 'react-native-paper';
+
+import { TextComponent } from './DialogTextComponent';
+
+const UndismissableDialog = ({
   visible,
   close,
 }: {
@@ -12,10 +15,10 @@ const DialogWithLongText = ({
     <Dialog onDismiss={close} visible={visible} dismissable={false}>
       <Dialog.Title>Alert</Dialog.Title>
       <Dialog.Content>
-        <Paragraph>This is an undismissable dialog!!</Paragraph>
+        <TextComponent>This is an undismissable dialog!!</TextComponent>
       </Dialog.Content>
       <Dialog.Actions>
-        <Button color={Colors.teal500} disabled>
+        <Button color={MD2Colors.teal500} disabled>
           Disagree
         </Button>
         <Button onPress={close}>Agree</Button>
@@ -24,4 +27,4 @@ const DialogWithLongText = ({
   </Portal>
 );
 
-export default DialogWithLongText;
+export default UndismissableDialog;

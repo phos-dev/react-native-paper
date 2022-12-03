@@ -1,19 +1,20 @@
 import React from 'react';
-import color from 'color';
 import {
-  Text,
-  StyleSheet,
-  StyleProp,
-  TextStyle,
-  LayoutChangeEvent,
   Animated,
+  LayoutChangeEvent,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
   ViewStyle,
 } from 'react-native';
 
-import { withTheme } from '../../../core/theming';
-import { AdornmentSide } from './enums';
+import color from 'color';
 
-const AFFIX_OFFSET = 12;
+import { withInternalTheme } from '../../../core/theming';
+import type { InternalTheme } from '../../../types';
+import { getConstants } from '../helpers';
+import { AdornmentSide } from './enums';
 
 export type Props = {
   /**
@@ -28,7 +29,7 @@ export type Props = {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
 };
 
 type ContextState = {
@@ -39,6 +40,7 @@ type ContextState = {
   side: AdornmentSide;
   paddingHorizontal?: number | string;
   maxFontSizeMultiplier?: number | undefined | null;
+  testID?: string;
 };
 
 const AffixContext = React.createContext<ContextState>({
@@ -61,6 +63,7 @@ const AffixAdornment: React.FunctionComponent<
   visible,
   paddingHorizontal,
   maxFontSizeMultiplier,
+  testID,
 }) => {
   return (
     <AffixContext.Provider
@@ -72,6 +75,7 @@ const AffixAdornment: React.FunctionComponent<
         visible,
         paddingHorizontal,
         maxFontSizeMultiplier,
+        testID,
       }}
     >
       {affix}
@@ -84,7 +88,7 @@ const AffixAdornment: React.FunctionComponent<
  *
  * <div class="screenshots">
  *   <figure>
- *     <img class="medium" src="screenshots/textinput-outline.affix.png" />
+ *     <img class="small" src="screenshots/textinput-outline.affix.png" />
  *   </figure>
  * </div>
  *
@@ -111,6 +115,8 @@ const AffixAdornment: React.FunctionComponent<
  */
 
 const TextInputAffix = ({ text, textStyle: labelStyle, theme }: Props) => {
+  const { AFFIX_OFFSET } = getConstants(theme.isV3);
+
   const {
     textStyle,
     onLayout,
@@ -119,8 +125,12 @@ const TextInputAffix = ({ text, textStyle: labelStyle, theme }: Props) => {
     visible,
     paddingHorizontal,
     maxFontSizeMultiplier,
+    testID,
   } = React.useContext(AffixContext);
-  const textColor = color(theme.colors.text)
+
+  const textColor = color(
+    theme.isV3 ? theme.colors.onSurface : theme.colors?.text
+  )
     .alpha(theme.dark ? 0.7 : 0.54)
     .rgb()
     .string();
@@ -147,6 +157,7 @@ const TextInputAffix = ({ text, textStyle: labelStyle, theme }: Props) => {
         },
       ]}
       onLayout={onLayout}
+      testID={testID}
     >
       <Text
         maxFontSizeMultiplier={maxFontSizeMultiplier}
@@ -167,7 +178,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(TextInputAffix);
+export default withInternalTheme(TextInputAffix);
 
 // @component-docs ignore-next-line
 export { TextInputAffix, AffixAdornment };

@@ -1,18 +1,22 @@
 import React from 'react';
-import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import IconButton from '../../IconButton';
-import type { $Omit } from '../../../../src/types';
+import { useInternalTheme } from '../../../core/theming';
+import type { $Omit, ThemeProp } from '../../../types';
 import type { IconSource } from '../../Icon';
+import IconButton from '../../IconButton/IconButton';
+import { ICON_SIZE } from '../constants';
+import { getConstants } from '../helpers';
 
 export type Props = $Omit<
   React.ComponentProps<typeof IconButton>,
   'icon' | 'theme' | 'color'
 > & {
   /**
+   * @renamed Renamed from 'name' to 'icon` in v5.x
    * Icon to show.
    */
-  name: IconSource;
+  icon: IconSource;
   /**
    * Function to execute on press.
    */
@@ -29,22 +33,21 @@ export type Props = $Omit<
   /**
    * @optional
    */
-  theme?: ReactNativePaper.Theme;
+  theme?: ThemeProp;
 };
-
-export const ICON_SIZE = 24;
-const ICON_OFFSET = 12;
 
 type StyleContextType = {
   style: StyleProp<ViewStyle>;
   isTextInputFocused: boolean;
   forceFocus: () => void;
+  testID: string;
 };
 
 const StyleContext = React.createContext<StyleContextType>({
   style: {},
   isTextInputFocused: false,
   forceFocus: () => {},
+  testID: '',
 });
 
 const IconAdornment: React.FunctionComponent<
@@ -54,12 +57,15 @@ const IconAdornment: React.FunctionComponent<
     topPosition: number;
     side: 'left' | 'right';
   } & Omit<StyleContextType, 'style'>
-> = ({ icon, topPosition, side, isTextInputFocused, forceFocus }) => {
+> = ({ icon, topPosition, side, isTextInputFocused, forceFocus, testID }) => {
+  const { isV3 } = useInternalTheme();
+  const { ICON_OFFSET } = getConstants(isV3);
+
   const style = {
     top: topPosition,
     [side]: ICON_OFFSET,
   };
-  const contextState = { style, isTextInputFocused, forceFocus };
+  const contextState = { style, isTextInputFocused, forceFocus, testID };
 
   return (
     <StyleContext.Provider value={contextState}>{icon}</StyleContext.Provider>
@@ -71,7 +77,7 @@ const IconAdornment: React.FunctionComponent<
  *
  * <div class="screenshots">
  *   <figure>
- *     <img class="medium" src="screenshots/textinput-flat.icon.png" />
+ *     <img class="small" src="screenshots/textinput-flat.icon.png" />
  *   </figure>
  * </div>
  *
@@ -87,7 +93,7 @@ const IconAdornment: React.FunctionComponent<
  *     <TextInput
  *       label="Password"
  *       secureTextEntry
- *       right={<TextInput.Icon name="eye" />}
+ *       right={<TextInput.Icon icon="eye" />}
  *     />
  *   );
  * };
@@ -97,13 +103,13 @@ const IconAdornment: React.FunctionComponent<
  */
 
 const TextInputIcon = ({
-  name,
+  icon,
   onPress,
   forceTextInputFocus,
   color,
   ...rest
 }: Props) => {
-  const { style, isTextInputFocused, forceFocus } =
+  const { style, isTextInputFocused, forceFocus, testID } =
     React.useContext(StyleContext);
 
   const onPressWithFocusControl = React.useCallback(() => {
@@ -113,14 +119,30 @@ const TextInputIcon = ({
     onPress?.();
   }, [forceTextInputFocus, forceFocus, isTextInputFocused, onPress]);
 
+  const theme = useInternalTheme();
+
+  let iconColor = color;
+
+  if (theme.isV3) {
+    if (rest.disabled) {
+      iconColor = theme.colors.onSurface;
+    }
+    iconColor = theme.colors.onSurfaceVariant;
+  } else {
+    iconColor = theme.colors.text;
+  }
+
   return (
     <View style={[styles.container, style]}>
       <IconButton
-        icon={name}
+        icon={icon}
         style={styles.iconButton}
         size={ICON_SIZE}
         onPress={onPressWithFocusControl}
-        color={typeof color === 'function' ? color(isTextInputFocused) : color}
+        iconColor={
+          typeof color === 'function' ? color(isTextInputFocused) : iconColor
+        }
+        testID={testID}
         {...rest}
       />
     </View>

@@ -1,15 +1,18 @@
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { RadioButton, Paragraph, List, useTheme } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+
+import { List, Paragraph, RadioButton, Text } from 'react-native-paper';
+
+import { useExampleTheme } from '..';
 import ScreenWrapper from '../ScreenWrapper';
 
 const RadioButtonGroupExample = () => {
-  const [value, setValue] = React.useState<string>('first');
-  const [value2, setValue2] = React.useState<string>('first');
+  const [value, setValue] = React.useState('first');
+  const [value2, setValue2] = React.useState('first');
 
-  const {
-    colors: { primary },
-  } = useTheme();
+  const { colors, isV3 } = useExampleTheme();
+  const TextComponent = isV3 ? Text : Paragraph;
+
   return (
     <ScreenWrapper>
       <List.Section title="With RadioButton">
@@ -18,15 +21,15 @@ const RadioButtonGroupExample = () => {
           onValueChange={(value: string) => setValue(value)}
         >
           <View style={styles.row}>
-            <Paragraph>First</Paragraph>
+            <TextComponent>First</TextComponent>
             <RadioButton value="first" />
           </View>
           <View style={styles.row}>
-            <Paragraph>Second</Paragraph>
+            <TextComponent>Second</TextComponent>
             <RadioButton.Android value="second" />
           </View>
           <View style={styles.row}>
-            <Paragraph>Third</Paragraph>
+            <TextComponent>Third</TextComponent>
             <RadioButton.IOS value="third" />
           </View>
         </RadioButton.Group>
@@ -41,7 +44,7 @@ const RadioButtonGroupExample = () => {
           <RadioButton.Item
             label="Third item"
             value="third"
-            labelStyle={{ color: primary }}
+            labelStyle={{ color: colors?.primary }}
           />
         </RadioButton.Group>
       </List.Section>

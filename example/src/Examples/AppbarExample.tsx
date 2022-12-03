@@ -1,15 +1,30 @@
 import * as React from 'react';
-import { View, Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
+
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { Appbar, FAB, Switch, Paragraph } from 'react-native-paper';
+import {
+  Appbar,
+  FAB,
+  List,
+  Paragraph,
+  RadioButton,
+  Switch,
+  Text,
+} from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useExampleTheme } from '..';
+import { yellowA200 } from '../../../src/styles/themes/v2/colors';
 import ScreenWrapper from '../ScreenWrapper';
-import { yellowA200 } from '../../../src/styles/colors';
 
 type Props = {
   navigation: StackNavigationProp<{}>;
 };
 
+type AppbarModes = 'small' | 'medium' | 'large' | 'center-aligned';
+
 const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
+const MEDIUM_FAB_HEIGHT = 56;
 
 const AppbarExample = ({ navigation }: Props) => {
   const [showLeftIcon, setShowLeftIcon] = React.useState(true);
@@ -18,6 +33,15 @@ const AppbarExample = ({ navigation }: Props) => {
   const [showMoreIcon, setShowMoreIcon] = React.useState(true);
   const [showCustomColor, setShowCustomColor] = React.useState(false);
   const [showExactTheme, setShowExactTheme] = React.useState(false);
+  const [appbarMode, setAppbarMode] = React.useState<AppbarModes>('small');
+  const [showCalendarIcon, setShowCalendarIcon] = React.useState(false);
+  const [showElevated, setShowElevated] = React.useState(false);
+
+  const theme = useExampleTheme();
+  const { bottom, left, right } = useSafeAreaInsets();
+  const height = theme.isV3 ? 80 : 56;
+
+  const isCenterAlignedMode = appbarMode === 'center-aligned';
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -27,6 +51,8 @@ const AppbarExample = ({ navigation }: Props) => {
           theme={{
             mode: showExactTheme ? 'exact' : 'adaptive',
           }}
+          mode={appbarMode}
+          elevated={showElevated}
         >
           {showLeftIcon && (
             <Appbar.BackAction onPress={() => navigation.goBack()} />
@@ -35,6 +61,11 @@ const AppbarExample = ({ navigation }: Props) => {
             title="Title"
             subtitle={showSubtitle ? 'Subtitle' : null}
           />
+          {isCenterAlignedMode
+            ? false
+            : showCalendarIcon && (
+                <Appbar.Action icon="calendar" onPress={() => {}} />
+              )}
           {showSearchIcon && (
             <Appbar.Action icon="magnify" onPress={() => {}} />
           )}
@@ -52,49 +83,139 @@ const AppbarExample = ({ navigation }: Props) => {
     showMoreIcon,
     showCustomColor,
     showExactTheme,
+    appbarMode,
+    showCalendarIcon,
+    isCenterAlignedMode,
+    showElevated,
   ]);
+
+  const TextComponent = theme.isV3 ? Text : Paragraph;
+
+  const renderFAB = () => {
+    return (
+      <FAB
+        mode={theme.isV3 ? 'flat' : 'elevated'}
+        size="medium"
+        icon="plus"
+        onPress={() => {}}
+        style={[
+          styles.fab,
+          theme.isV3
+            ? { top: (height - MEDIUM_FAB_HEIGHT) / 2 }
+            : { bottom: height / 2 + bottom },
+        ]}
+      />
+    );
+  };
+
+  const renderDefaultOptions = () => (
+    <>
+      <View style={styles.row}>
+        <TextComponent>Left icon</TextComponent>
+        <Switch value={showLeftIcon} onValueChange={setShowLeftIcon} />
+      </View>
+      {!theme.isV3 && (
+        <View style={styles.row}>
+          <TextComponent>Subtitle</TextComponent>
+          <Switch value={showSubtitle} onValueChange={setShowSubtitle} />
+        </View>
+      )}
+      <View style={styles.row}>
+        <TextComponent>Search icon</TextComponent>
+        <Switch value={showSearchIcon} onValueChange={setShowSearchIcon} />
+      </View>
+      <View style={styles.row}>
+        <TextComponent>More icon</TextComponent>
+        <Switch value={showMoreIcon} onValueChange={setShowMoreIcon} />
+      </View>
+      {theme.isV3 && (
+        <View style={styles.row}>
+          <TextComponent>Calendar icon</TextComponent>
+          <Switch
+            value={isCenterAlignedMode ? false : showCalendarIcon}
+            disabled={isCenterAlignedMode}
+            onValueChange={setShowCalendarIcon}
+          />
+        </View>
+      )}
+      <View style={styles.row}>
+        <TextComponent>Custom Color</TextComponent>
+        <Switch value={showCustomColor} onValueChange={setShowCustomColor} />
+      </View>
+      <View style={styles.row}>
+        <TextComponent>Exact Dark Theme</TextComponent>
+        <Switch value={showExactTheme} onValueChange={setShowExactTheme} />
+      </View>
+      {theme.isV3 && (
+        <View style={styles.row}>
+          <TextComponent>Elevated</TextComponent>
+          <Switch value={showElevated} onValueChange={setShowElevated} />
+        </View>
+      )}
+    </>
+  );
 
   return (
     <>
       <ScreenWrapper
-        style={styles.container}
+        style={{ marginBottom: height + bottom }}
         contentContainerStyle={styles.contentContainer}
       >
-        <View style={styles.row}>
-          <Paragraph>Left icon</Paragraph>
-          <Switch value={showLeftIcon} onValueChange={setShowLeftIcon} />
-        </View>
-        <View style={styles.row}>
-          <Paragraph>Subtitle</Paragraph>
-          <Switch value={showSubtitle} onValueChange={setShowSubtitle} />
-        </View>
-        <View style={styles.row}>
-          <Paragraph>Search icon</Paragraph>
-          <Switch value={showSearchIcon} onValueChange={setShowSearchIcon} />
-        </View>
-        <View style={styles.row}>
-          <Paragraph>More icon</Paragraph>
-          <Switch value={showMoreIcon} onValueChange={setShowMoreIcon} />
-        </View>
-        <View style={styles.row}>
-          <Paragraph>Custom Color</Paragraph>
-          <Switch value={showCustomColor} onValueChange={setShowCustomColor} />
-        </View>
-        <View style={styles.row}>
-          <Paragraph>Exact Dark Theme</Paragraph>
-          <Switch value={showExactTheme} onValueChange={setShowExactTheme} />
-        </View>
+        {theme.isV3 ? (
+          <List.Section title="Default options">
+            {renderDefaultOptions()}
+          </List.Section>
+        ) : (
+          renderDefaultOptions()
+        )}
+        {theme.isV3 && (
+          <List.Section title="Appbar Modes">
+            <RadioButton.Group
+              value={appbarMode}
+              onValueChange={(value: string) =>
+                setAppbarMode(value as AppbarModes)
+              }
+            >
+              <View style={styles.row}>
+                <TextComponent>Small (default)</TextComponent>
+                <RadioButton value="small" />
+              </View>
+              <View style={styles.row}>
+                <TextComponent>Medium</TextComponent>
+                <RadioButton value="medium" />
+              </View>
+              <View style={styles.row}>
+                <TextComponent>Large</TextComponent>
+                <RadioButton value="large" />
+              </View>
+              <View style={styles.row}>
+                <TextComponent>Center-aligned</TextComponent>
+                <RadioButton value="center-aligned" />
+              </View>
+            </RadioButton.Group>
+          </List.Section>
+        )}
       </ScreenWrapper>
       <Appbar
-        style={styles.bottom}
+        style={[
+          styles.bottom,
+          {
+            height: height + bottom,
+            backgroundColor: theme.isV3
+              ? theme.colors.elevation.level2
+              : theme.colors.primary,
+          },
+        ]}
+        safeAreaInsets={{ bottom, left, right }}
         theme={{ mode: showExactTheme ? 'exact' : 'adaptive' }}
       >
         <Appbar.Action icon="archive" onPress={() => {}} />
         <Appbar.Action icon="email" onPress={() => {}} />
         <Appbar.Action icon="label" onPress={() => {}} />
         <Appbar.Action icon="delete" onPress={() => {}} />
+        {theme.isV3 && renderFAB()}
       </Appbar>
-      <FAB icon="reply" onPress={() => {}} style={styles.fab} />
+      {!theme.isV3 && renderFAB()}
     </>
   );
 };
@@ -104,9 +225,6 @@ AppbarExample.title = 'Appbar';
 export default AppbarExample;
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 56,
-  },
   contentContainer: {
     paddingVertical: 8,
   },
@@ -126,7 +244,6 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 16,
-    bottom: 28,
   },
   customColor: {
     backgroundColor: yellowA200,

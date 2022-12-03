@@ -1,9 +1,12 @@
 import * as React from 'react';
-import { StyleSheet, StyleProp, TextStyle } from 'react-native';
-import Title from '../Typography/Title';
-import { withTheme } from '../../core/theming';
+import { StyleProp, StyleSheet, TextStyle } from 'react-native';
 
-type Props = React.ComponentPropsWithRef<typeof Title> & {
+import { withInternalTheme } from '../../core/theming';
+import type { InternalTheme } from '../../types';
+import Text from '../Typography/Text';
+import Title from '../Typography/v2/Title';
+
+export type Props = React.ComponentPropsWithRef<typeof Title> & {
   /**
    * Title text for the `DialogTitle`.
    */
@@ -12,7 +15,7 @@ type Props = React.ComponentPropsWithRef<typeof Title> & {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
 };
 
 /**
@@ -20,7 +23,7 @@ type Props = React.ComponentPropsWithRef<typeof Title> & {
  *
  * <div class="screenshots">
  *   <figure>
- *     <img class="medium" src="screenshots/dialog-title.png" />
+ *     <img class="small" src="screenshots/dialog-title.png" />
  *   </figure>
  * </div>
  *
@@ -49,17 +52,27 @@ type Props = React.ComponentPropsWithRef<typeof Title> & {
  * export default MyComponent;
  * ```
  */
-const DialogTitle = ({ children, theme, style, ...rest }: Props) => (
-  <Title
-    // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
-    accessibilityTraits="header"
-    accessibilityRole="header"
-    style={[styles.text, { color: theme.colors.text }, style]}
-    {...rest}
-  >
-    {children}
-  </Title>
-);
+const DialogTitle = ({ children, theme, style, ...rest }: Props) => {
+  const { isV3 } = theme;
+
+  const TextComponent = isV3 ? Text : Title;
+
+  const headerTextStyle = {
+    color: isV3 ? theme.colors.onSurface : theme.colors?.text,
+    ...(isV3 ? theme.fonts.headlineSmall : {}),
+  };
+
+  return (
+    <TextComponent
+      variant="headlineSmall"
+      accessibilityRole="header"
+      style={[styles.text, isV3 && styles.v3Text, headerTextStyle, style]}
+      {...rest}
+    >
+      {children}
+    </TextComponent>
+  );
+};
 
 DialogTitle.displayName = 'Dialog.Title';
 
@@ -69,9 +82,13 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     marginHorizontal: 24,
   },
+  v3Text: {
+    marginTop: 16,
+    marginBottom: 16,
+  },
 });
 
-export default withTheme(DialogTitle);
+export default withInternalTheme(DialogTitle);
 
 // @component-docs ignore-next-line
 export { DialogTitle };

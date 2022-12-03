@@ -7,11 +7,13 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import { withTheme } from '../../core/theming';
-import Caption from './../Typography/Caption';
-import Title from './../Typography/Title';
+import { withInternalTheme } from '../../core/theming';
+import type { InternalTheme, MD3TypescaleKey } from '../../types';
+import Text from '../Typography/Text';
+import Caption from '../Typography/v2/Caption';
+import Title from '../Typography/v2/Title';
 
-type Props = React.ComponentPropsWithRef<typeof View> & {
+export type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * Text for the title. Note that this will only accept a string or `<Text>`-based node.
    */
@@ -25,6 +27,23 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
    */
   titleNumberOfLines?: number;
   /**
+   * @supported Available in v5.x with theme version 3
+   *
+   * Title text variant defines appropriate text styles for type role and its size.
+   * Available variants:
+   *
+   *  Display: `displayLarge`, `displayMedium`, `displaySmall`
+   *
+   *  Headline: `headlineLarge`, `headlineMedium`, `headlineSmall`
+   *
+   *  Title: `titleLarge`, `titleMedium`, `titleSmall`
+   *
+   *  Label:  `labelLarge`, `labelMedium`, `labelSmall`
+   *
+   *  Body: `bodyLarge`, `bodyMedium`, `bodySmall`
+   */
+  titleVariant?: keyof typeof MD3TypescaleKey;
+  /**
    * Text for the subtitle. Note that this will only accept a string or `<Text>`-based node.
    */
   subtitle?: React.ReactNode;
@@ -36,6 +55,23 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
    * Number of lines for the subtitle.
    */
   subtitleNumberOfLines?: number;
+  /**
+   * @supported Available in v5.x with theme version 3
+   *
+   * Subtitle text variant defines appropriate text styles for type role and its size.
+   * Available variants:
+   *
+   *  Display: `displayLarge`, `displayMedium`, `displaySmall`
+   *
+   *  Headline: `headlineLarge`, `headlineMedium`, `headlineSmall`
+   *
+   *  Title: `titleLarge`, `titleMedium`, `titleSmall`
+   *
+   *  Label:  `labelLarge`, `labelMedium`, `labelSmall`
+   *
+   *  Body: `bodyLarge`, `bodyMedium`, `bodySmall`
+   */
+  subtitleVariant?: keyof typeof MD3TypescaleKey;
   /**
    * Callback which returns a React element to display on the left side.
    */
@@ -64,7 +100,7 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
 };
 
 const LEFT_SIZE = 40;
@@ -73,7 +109,7 @@ const LEFT_SIZE = 40;
  * A component to show a title, subtitle and an avatar inside a Card.
  *
  * <div class="screenshots">
- *   <img class="medium" src="screenshots/card-title-1.png" />
+ *   <img class="small" src="screenshots/card-title-1.png" />
  * </div>
  *
  * ## Usage
@@ -97,15 +133,27 @@ const CardTitle = ({
   title,
   titleStyle,
   titleNumberOfLines = 1,
+  titleVariant = 'bodyLarge',
   subtitle,
   subtitleStyle,
   subtitleNumberOfLines = 1,
+  subtitleVariant = 'bodyMedium',
   left,
   leftStyle,
   right,
   rightStyle,
   style,
+  theme,
 }: Props) => {
+  const titleComponent = (props: any) =>
+    theme.isV3 ? <Text {...props} /> : <Title {...props} />;
+
+  const subtitleComponent = (props: any) =>
+    theme.isV3 ? <Text {...props} /> : <Caption {...props} />;
+
+  const TextComponent = React.memo(({ component, ...rest }: any) =>
+    React.createElement(component, rest)
+  );
   return (
     <View
       style={[
@@ -123,29 +171,31 @@ const CardTitle = ({
       ) : null}
 
       <View style={[styles.titles]}>
-        {title ? (
-          <Title
+        {title && (
+          <TextComponent
+            component={titleComponent}
             style={[
               styles.title,
               { marginBottom: subtitle ? 0 : 2 },
               titleStyle,
             ]}
             numberOfLines={titleNumberOfLines}
+            variant={titleVariant}
           >
             {title}
-          </Title>
-        ) : null}
-
-        {subtitle ? (
-          <Caption
+          </TextComponent>
+        )}
+        {subtitle && (
+          <TextComponent
+            component={subtitleComponent}
             style={[styles.subtitle, subtitleStyle]}
             numberOfLines={subtitleNumberOfLines}
+            variant={subtitleVariant}
           >
             {subtitle}
-          </Caption>
-        ) : null}
+          </TextComponent>
+        )}
       </View>
-
       <View style={rightStyle}>{right ? right({ size: 24 }) : null}</View>
     </View>
   );
@@ -186,7 +236,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(CardTitle);
+export default withInternalTheme(CardTitle);
 
 // @component-docs ignore-next-line
 export { CardTitle };

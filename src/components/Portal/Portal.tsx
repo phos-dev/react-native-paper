@@ -1,13 +1,16 @@
 import * as React from 'react';
+
+import type { InternalTheme } from 'src/types';
+
+import {
+  Consumer as SettingsConsumer,
+  Provider as SettingsProvider,
+} from '../../core/settings';
+import { ThemeProvider, withInternalTheme } from '../../core/theming';
 import PortalConsumer from './PortalConsumer';
 import PortalHost, { PortalContext, PortalMethods } from './PortalHost';
-import {
-  Provider as SettingsProvider,
-  Consumer as SettingsConsumer,
-} from '../../core/settings';
-import { ThemeProvider, withTheme } from '../../core/theming';
 
-type Props = {
+export type Props = {
   /**
    * Content of the `Portal`.
    */
@@ -15,13 +18,14 @@ type Props = {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
 };
 
 /**
- * Portal allows to render a component at a different place in the parent tree.
+ * Portal allows rendering a component at a different place in the parent tree.
  * You can use it to render content which should appear above other elements, similar to `Modal`.
  * It requires a [`Portal.Host`](portal-host.html) component to be rendered somewhere in the parent tree.
+ * Note that if you're using the `Provider` component, this already includes a `Portal.Host`.
  *
  * ## Usage
  * ```js
@@ -51,6 +55,7 @@ class Portal extends React.Component<Props> {
             {(manager) => (
               <PortalConsumer manager={manager as PortalMethods}>
                 <SettingsProvider value={settings}>
+                  {/* @ts-expect-error check @callstack/react-theme-provider's children prop */}
                   <ThemeProvider theme={theme}>{children}</ThemeProvider>
                 </SettingsProvider>
               </PortalConsumer>
@@ -62,4 +67,4 @@ class Portal extends React.Component<Props> {
   }
 }
 
-export default withTheme(Portal);
+export default withInternalTheme(Portal);

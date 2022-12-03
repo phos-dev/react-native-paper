@@ -1,11 +1,15 @@
-import color from 'color';
 import * as React from 'react';
-import { View, ViewStyle, StyleSheet, StyleProp } from 'react-native';
-import Text from '../Typography/Text';
-import Divider from '../Divider';
-import { withTheme } from '../../core/theming';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-type Props = React.ComponentPropsWithRef<typeof View> & {
+import color from 'color';
+
+import { withInternalTheme } from '../../core/theming';
+import { MD3Colors } from '../../styles/themes/v3/tokens';
+import type { InternalTheme } from '../../types';
+import Divider from '../Divider';
+import Text from '../Typography/Text';
+
+export type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * Title to show as the header for the section.
    */
@@ -18,7 +22,7 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
 };
 
 /**
@@ -26,7 +30,7 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
  *
  * <div class="screenshots">
  *   <figure>
- *     <img class="medium" src="screenshots/drawer-section.png" />
+ *     <img class="small" src="screenshots/drawer-section.png" />
  *   </figure>
  * </div>
  *
@@ -37,7 +41,6 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
  *
  * const MyComponent = () => {
  *   const [active, setActive] = React.useState('');
- *
  *
  *   return (
  *     <Drawer.Section title="Some title">
@@ -59,24 +62,39 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
  * ```
  */
 const DrawerSection = ({ children, title, theme, style, ...rest }: Props) => {
-  const { colors, fonts } = theme;
-  const titleColor = color(colors.text).alpha(0.54).rgb().string();
-  const font = fonts.medium;
+  const { isV3 } = theme;
+  const titleColor = isV3
+    ? theme.colors.onSurfaceVariant
+    : color(theme.colors.text).alpha(0.54).rgb().string();
+  const titleMargin = isV3 ? 28 : 16;
+  const font = isV3 ? theme.fonts.titleSmall : theme.fonts.medium;
 
   return (
     <View style={[styles.container, style]} {...rest}>
       {title && (
-        <View style={styles.titleContainer}>
-          <Text
-            numberOfLines={1}
-            style={[{ color: titleColor, ...font }, styles.title]}
-          >
-            {title}
-          </Text>
+        <View style={[styles.titleContainer, isV3 && styles.v3TitleContainer]}>
+          {title && (
+            <Text
+              variant="titleSmall"
+              numberOfLines={1}
+              style={[
+                {
+                  color: titleColor,
+                  marginLeft: titleMargin,
+                  ...font,
+                },
+              ]}
+            >
+              {title}
+            </Text>
+          )}
         </View>
       )}
       {children}
-      <Divider style={styles.divider} />
+      <Divider
+        {...(isV3 && { horizontalInset: true, bold: true })}
+        style={[styles.divider, isV3 && styles.v3Divider]}
+      />
     </View>
   );
 };
@@ -91,12 +109,15 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
   },
-  title: {
-    marginLeft: 16,
+  v3TitleContainer: {
+    height: 56,
   },
   divider: {
     marginTop: 4,
   },
+  v3Divider: {
+    backgroundColor: MD3Colors.neutralVariant50,
+  },
 });
 
-export default withTheme(DrawerSection);
+export default withInternalTheme(DrawerSection);

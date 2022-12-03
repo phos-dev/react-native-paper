@@ -1,23 +1,28 @@
 import * as React from 'react';
 import {
-  Platform,
-  StyleSheet,
-  StyleProp,
-  TextInput,
+  Animated,
   I18nManager,
+  Platform,
+  StyleProp,
+  StyleSheet,
+  TextInput,
   TextInputProps,
-  ViewStyle,
   TextStyle,
+  View,
+  ViewStyle,
 } from 'react-native';
 
 import color from 'color';
-import IconButton from './IconButton';
-import Surface from './Surface';
-import { withTheme } from '../core/theming';
-import type { IconSource } from './Icon';
-import MaterialCommunityIcon from './MaterialCommunityIcon';
 
-type Props = React.ComponentPropsWithRef<typeof TextInput> & {
+import { withInternalTheme } from '../core/theming';
+import type { InternalTheme } from '../types';
+import ActivityIndicator from './ActivityIndicator';
+import type { IconSource } from './Icon';
+import IconButton from './IconButton/IconButton';
+import MaterialCommunityIcon from './MaterialCommunityIcon';
+import Surface from './Surface';
+
+export type Props = React.ComponentPropsWithRef<typeof TextInput> & {
   /**
    * Accessibility label for the button. This is read by the screen reader when the user taps the button.
    */
@@ -47,15 +52,15 @@ type Props = React.ComponentPropsWithRef<typeof TextInput> & {
    */
   onIconPress?: () => void;
   /**
+   * @supported Available in v5.x with theme version 3
+   * Changes Searchbar shadow and background on iOS and Android.
+   */
+  elevation?: 0 | 1 | 2 | 3 | 4 | 5 | Animated.Value;
+  /**
    * Set style of the TextInput component inside the searchbar
    */
   inputStyle?: StyleProp<TextStyle>;
   style?: StyleProp<ViewStyle>;
-
-  /**
-   * @optional
-   */
-  theme: ReactNativePaper.Theme;
   /**
    * Custom color for icon, default will be derived from theme
    */
@@ -64,6 +69,19 @@ type Props = React.ComponentPropsWithRef<typeof TextInput> & {
    * Custom icon for clear button, default will be icon close
    */
   clearIcon?: IconSource;
+  /**
+   * @supported Available in v5.x
+   * Custom flag for replacing clear button with activity indicator.
+   */
+  loading?: Boolean;
+  /**
+   * TestID used for testing purposes
+   */
+  testID?: string;
+  /**
+   * @optional
+   */
+  theme: InternalTheme;
 };
 
 type TextInputHandles = Pick<
@@ -75,7 +93,7 @@ type TextInputHandles = Pick<
  * Searchbar is a simple input box where users can type search queries.
  *
  * <div class="screenshots">
- *   <img class="medium" src="screenshots/searchbar.png" />
+ *   <img class="small" src="screenshots/searchbar.png" />
  * </div>
  *
  * ## Usage
@@ -112,9 +130,12 @@ const Searchbar = React.forwardRef<TextInputHandles, Props>(
       onIconPress,
       placeholder,
       searchAccessibilityLabel = 'search',
+      elevation = 1,
       style,
       theme,
       value,
+      loading = false,
+      testID = 'search-bar',
       ...rest
     }: Props,
     ref
@@ -152,9 +173,8 @@ const Searchbar = React.forwardRef<TextInputHandles, Props>(
       rest.onChangeText?.('');
     };
 
-    const { colors, roundness, dark, fonts } = theme;
-    const textColor = colors.text;
-    const font = fonts.regular;
+    const { colors, roundness, dark, isV3 } = theme;
+    const textColor = isV3 ? theme.colors.onSurface : theme.colors.text;
     const iconColor =
       customIconColor ||
       (dark ? textColor : color(textColor).alpha(0.54).rgb().string());
@@ -163,20 +183,19 @@ const Searchbar = React.forwardRef<TextInputHandles, Props>(
     return (
       <Surface
         style={[
-          { borderRadius: roundness, elevation: 4 },
+          { borderRadius: roundness },
+          !isV3 && styles.elevation,
           styles.container,
           style,
         ]}
+        {...(theme.isV3 && { elevation })}
       >
         <IconButton
-          // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
-          accessibilityTraits="button"
-          accessibilityComponentType="button"
           accessibilityRole="button"
           borderless
           rippleColor={rippleColor}
           onPress={onIconPress}
-          color={iconColor}
+          iconColor={iconColor}
           icon={
             icon ||
             (({ size, color }) => (
@@ -184,7 +203,7 @@ const Searchbar = React.forwardRef<TextInputHandles, Props>(
                 name="magnify"
                 color={color}
                 size={size}
-                direction={I18nManager.isRTL ? 'rtl' : 'ltr'}
+                direction={I18nManager.getConstants().isRTL ? 'rtl' : 'ltr'}
               />
             ))
           }
@@ -195,47 +214,60 @@ const Searchbar = React.forwardRef<TextInputHandles, Props>(
             styles.input,
             {
               color: textColor,
-              ...font,
+              ...(theme.isV3 ? theme.fonts.default : theme.fonts.regular),
               ...Platform.select({ web: { outline: 'none' } }),
             },
             inputStyle,
           ]}
           placeholder={placeholder || ''}
-          placeholderTextColor={colors.placeholder}
-          selectionColor={colors.primary}
+          placeholderTextColor={
+            theme.isV3 ? theme.colors.onSurface : theme.colors?.placeholder
+          }
+          selectionColor={colors?.primary}
           underlineColorAndroid="transparent"
           returnKeyType="search"
           keyboardAppearance={dark ? 'dark' : 'light'}
-          // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
-          accessibilityTraits="search"
           accessibilityRole="search"
           ref={root}
           value={value}
+          testID={testID}
           {...rest}
         />
-        <IconButton
-          borderless
-          disabled={!value}
-          accessibilityLabel={clearAccessibilityLabel}
-          color={value ? iconColor : 'rgba(255, 255, 255, 0)'}
-          rippleColor={rippleColor}
-          onPress={handleClearPress}
-          icon={
-            clearIcon ||
-            (({ size, color }) => (
-              <MaterialCommunityIcon
-                name="close"
-                color={color}
-                size={size}
-                direction={I18nManager.isRTL ? 'rtl' : 'ltr'}
-              />
-            ))
-          }
-          // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
-          accessibilityTraits="button"
-          accessibilityComponentType="button"
-          accessibilityRole="button"
-        />
+        {loading ? (
+          <ActivityIndicator
+            testID="activity-indicator"
+            style={styles.loader}
+          />
+        ) : (
+          // Clear icon should be always rendered within Searchbar – it's transparent,
+          // without touch events, when there is no value. It's done to avoid issues
+          // with the abruptly stopping ripple effect and changing bar width on web,
+          // when clearing the value.
+          <View
+            pointerEvents={value ? 'auto' : 'none'}
+            testID={`${testID}-icon-wrapper`}
+          >
+            <IconButton
+              borderless
+              accessibilityLabel={clearAccessibilityLabel}
+              iconColor={value ? iconColor : 'rgba(255, 255, 255, 0)'}
+              rippleColor={rippleColor}
+              onPress={handleClearPress}
+              icon={
+                clearIcon ||
+                (({ size, color }) => (
+                  <MaterialCommunityIcon
+                    name="close"
+                    color={color}
+                    size={size}
+                    direction={I18nManager.getConstants().isRTL ? 'rtl' : 'ltr'}
+                  />
+                ))
+              }
+              accessibilityRole="button"
+            />
+          </View>
+        )}
       </Surface>
     );
   }
@@ -251,9 +283,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingLeft: 8,
     alignSelf: 'stretch',
-    textAlign: I18nManager.isRTL ? 'right' : 'left',
+    textAlign: I18nManager.getConstants().isRTL ? 'right' : 'left',
     minWidth: 0,
+  },
+  elevation: {
+    elevation: 4,
+  },
+  loader: {
+    margin: 10,
   },
 });
 
-export default withTheme(Searchbar);
+export default withInternalTheme(Searchbar);

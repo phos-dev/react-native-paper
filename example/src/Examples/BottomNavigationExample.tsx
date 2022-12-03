@@ -1,13 +1,25 @@
 import * as React from 'react';
-import { View, Image, Dimensions, StyleSheet, Platform } from 'react-native';
-import { BottomNavigation } from 'react-native-paper';
-import ScreenWrapper from '../ScreenWrapper';
+import {
+  Dimensions,
+  Easing,
+  Image,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native';
+
+import type { StackNavigationProp } from '@react-navigation/stack';
+import { Appbar, BottomNavigation, Menu } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useExampleTheme } from '..';
+import ScreenWrapper from '../ScreenWrapper';
 
 type RoutesState = Array<{
   key: string;
   title: string;
-  icon: string;
+  focusedIcon: string;
+  unfocusedIcon?: string;
   color?: string;
   badge?: boolean;
   getAccessibilityLabel?: string;
@@ -15,6 +27,12 @@ type RoutesState = Array<{
 }>;
 
 type Route = { route: { key: string } };
+
+type Props = {
+  navigation: StackNavigationProp<{}>;
+};
+
+const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
 const PhotoGallery = ({ route }: Route) => {
   const PHOTOS = Array.from({ length: 24 }).map(
@@ -25,52 +43,128 @@ const PhotoGallery = ({ route }: Route) => {
     <ScreenWrapper contentContainerStyle={styles.content}>
       {PHOTOS.map((uri) => (
         <View key={uri} style={styles.item}>
-          <Image source={{ uri }} style={styles.photo} />
+          <Image
+            source={{ uri }}
+            style={styles.photo}
+            accessibilityIgnoresInvertColors
+          />
         </View>
       ))}
     </ScreenWrapper>
   );
 };
 
-const BottomNavigationExample = () => {
+const BottomNavigationExample = ({ navigation }: Props) => {
+  const { isV3 } = useExampleTheme();
   const insets = useSafeAreaInsets();
   const [index, setIndex] = React.useState(0);
+  const [menuVisible, setMenuVisible] = React.useState(false);
+  const [sceneAnimation, setSceneAnimation] =
+    React.useState<
+      React.ComponentProps<typeof BottomNavigation>['sceneAnimationType']
+    >();
+
   const [routes] = React.useState<RoutesState>([
-    { key: 'album', title: 'Album', icon: 'image-album', color: '#6200ee' },
+    {
+      key: 'album',
+      title: 'Album',
+      focusedIcon: 'image-album',
+      ...(!isV3 && { color: '#6200ee' }),
+    },
     {
       key: 'library',
       title: 'Library',
-      icon: 'inbox',
-      color: '#2962ff',
+      focusedIcon: 'inbox',
       badge: true,
+      ...(isV3
+        ? { unfocusedIcon: 'inbox-outline' }
+        : {
+            color: '#2962ff',
+          }),
     },
     {
       key: 'favorites',
       title: 'Favorites',
-      icon: 'heart',
-      color: '#00796b',
+      focusedIcon: 'heart',
+      ...(isV3
+        ? { unfocusedIcon: 'heart-outline' }
+        : {
+            color: '#00796b',
+          }),
     },
     {
       key: 'purchased',
       title: 'Purchased',
-      icon: 'shopping-music',
-      color: '#c51162',
+      focusedIcon: 'shopping',
+      ...(isV3 ? { unfocusedIcon: 'shopping-outline' } : { color: '#c51162' }),
     },
   ]);
 
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
+
   return (
-    <BottomNavigation
-      safeAreaInsets={{ bottom: insets.bottom }}
-      navigationState={{ index, routes }}
-      onIndexChange={setIndex}
-      labelMaxFontSizeMultiplier={2}
-      renderScene={BottomNavigation.SceneMap({
-        album: PhotoGallery,
-        library: PhotoGallery,
-        favorites: PhotoGallery,
-        purchased: PhotoGallery,
-      })}
-    />
+    <View style={styles.screen}>
+      <Appbar.Header elevated>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Bottom Navigation" />
+        <Menu
+          visible={menuVisible}
+          onDismiss={() => setMenuVisible(false)}
+          anchor={
+            <Appbar.Action
+              icon={MORE_ICON}
+              onPress={() => setMenuVisible(true)}
+              {...(!isV3 && { color: 'white' })}
+            />
+          }
+        >
+          <Menu.Item
+            trailingIcon={sceneAnimation === undefined ? 'check' : undefined}
+            onPress={() => {
+              setSceneAnimation(undefined);
+              setMenuVisible(false);
+            }}
+            title="Scene animation: none"
+          />
+          <Menu.Item
+            trailingIcon={sceneAnimation === 'shifting' ? 'check' : undefined}
+            onPress={() => {
+              setSceneAnimation('shifting');
+              setMenuVisible(false);
+            }}
+            title="Scene animation: shifting"
+          />
+          <Menu.Item
+            trailingIcon={sceneAnimation === 'opacity' ? 'check' : undefined}
+            onPress={() => {
+              setSceneAnimation('opacity');
+              setMenuVisible(false);
+            }}
+            title="Scene animation: opacity"
+          />
+        </Menu>
+      </Appbar.Header>
+      <BottomNavigation
+        safeAreaInsets={{ bottom: insets.bottom }}
+        navigationState={{ index, routes }}
+        onIndexChange={setIndex}
+        labelMaxFontSizeMultiplier={2}
+        renderScene={BottomNavigation.SceneMap({
+          album: PhotoGallery,
+          library: PhotoGallery,
+          favorites: PhotoGallery,
+          purchased: PhotoGallery,
+        })}
+        sceneAnimationEnabled={sceneAnimation !== undefined}
+        sceneAnimationType={sceneAnimation}
+        sceneAnimationEasing={Easing.ease}
+        getLazy={({ route }) => route.key !== 'album'}
+      />
+    </View>
   );
 };
 
@@ -110,5 +204,8 @@ const styles = StyleSheet.create({
   photo: {
     flex: 1,
     resizeMode: 'cover',
+  },
+  screen: {
+    flex: 1,
   },
 });

@@ -1,12 +1,20 @@
 import * as React from 'react';
-import { Animated, StyleSheet, StyleProp, TextStyle } from 'react-native';
-import { white, black } from '../styles/colors';
-import { withTheme } from '../core/theming';
+import {
+  Animated,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
+  useWindowDimensions,
+} from 'react-native';
+
+import { withInternalTheme } from '../core/theming';
+import { black, white } from '../styles/themes/v2/colors';
+import type { InternalTheme } from '../types';
 import getContrastingColor from '../utils/getContrastingColor';
 
 const defaultSize = 20;
 
-type Props = React.ComponentProps<typeof Animated.Text> & {
+export type Props = React.ComponentProps<typeof Animated.Text> & {
   /**
    * Whether the badge is visible
    */
@@ -24,7 +32,7 @@ type Props = React.ComponentProps<typeof Animated.Text> & {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
 };
 
 /**
@@ -65,6 +73,8 @@ const Badge = ({
   const { current: opacity } = React.useRef<Animated.Value>(
     new Animated.Value(visible ? 1 : 0)
   );
+  const { fontScale } = useWindowDimensions();
+
   const isFirstRendering = React.useRef<boolean>(true);
 
   const {
@@ -85,12 +95,20 @@ const Badge = ({
     }).start();
   }, [visible, opacity, scale]);
 
-  const { backgroundColor = theme.colors.notification, ...restStyle } =
-    (StyleSheet.flatten(style) || {}) as TextStyle;
+  const {
+    backgroundColor = theme.isV3
+      ? theme.colors.error
+      : theme.colors?.notification,
+    ...restStyle
+  } = (StyleSheet.flatten(style) || {}) as TextStyle;
 
-  const textColor = getContrastingColor(backgroundColor, white, black);
+  const textColor = theme.isV3
+    ? theme.colors.onError
+    : getContrastingColor(backgroundColor, white, black);
 
   const borderRadius = size / 2;
+
+  const paddingHorizontal = theme.isV3 ? 3 : 4;
 
   return (
     <Animated.Text
@@ -101,11 +119,12 @@ const Badge = ({
           backgroundColor,
           color: textColor,
           fontSize: size * 0.5,
-          ...theme.fonts.regular,
-          lineHeight: size,
+          ...(!theme.isV3 && theme.fonts.regular),
+          lineHeight: size / fontScale,
           height: size,
           minWidth: size,
           borderRadius,
+          paddingHorizontal,
         },
         styles.container,
         restStyle,
@@ -117,14 +136,13 @@ const Badge = ({
   );
 };
 
-export default withTheme(Badge);
+export default withInternalTheme(Badge);
 
 const styles = StyleSheet.create({
   container: {
     alignSelf: 'flex-end',
     textAlign: 'center',
     textAlignVertical: 'center',
-    paddingHorizontal: 4,
     overflow: 'hidden',
   },
 });

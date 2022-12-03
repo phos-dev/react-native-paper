@@ -1,12 +1,16 @@
 import * as React from 'react';
-import { View, StyleSheet, Image } from 'react-native';
-import { Chip, List, useTheme, Snackbar } from 'react-native-paper';
+import { Image, StyleSheet, View } from 'react-native';
+
 import color from 'color';
+import { Chip, List, MD2Colors, MD3Colors, Snackbar } from 'react-native-paper';
+
+import { useExampleTheme } from '..';
 import ScreenWrapper from '../ScreenWrapper';
 
 const ChipExample = () => {
   const [visible, setVisible] = React.useState<boolean>(false);
-  const { colors } = useTheme();
+  const { isV3 } = useExampleTheme();
+  const customColor = isV3 ? MD3Colors.secondary20 : MD2Colors.purple900;
 
   return (
     <>
@@ -16,6 +20,24 @@ const ChipExample = () => {
             <Chip selected onPress={() => {}} style={styles.chip}>
               Simple
             </Chip>
+            {isV3 && (
+              <>
+                <Chip
+                  selected
+                  showSelectedOverlay
+                  onPress={() => {}}
+                  style={styles.chip}
+                >
+                  With selected overlay
+                </Chip>
+                <Chip elevated onPress={() => {}} style={styles.chip}>
+                  Elevated
+                </Chip>
+                <Chip compact style={styles.chip} onPress={() => {}}>
+                  Compact chip
+                </Chip>
+              </>
+            )}
             <Chip
               onPress={() => {}}
               onClose={() => {}}
@@ -34,7 +56,10 @@ const ChipExample = () => {
             </Chip>
             <Chip
               avatar={
-                <Image source={require('../../assets/images/avatar.png')} />
+                <Image
+                  source={require('../../assets/images/avatar.png')}
+                  accessibilityIgnoresInvertColors
+                />
               }
               onPress={() => {}}
               onClose={() => {}}
@@ -45,7 +70,10 @@ const ChipExample = () => {
             <Chip
               selected
               avatar={
-                <Image source={require('../../assets/images/avatar.png')} />
+                <Image
+                  source={require('../../assets/images/avatar.png')}
+                  accessibilityIgnoresInvertColors
+                />
               }
               onPress={() => {}}
               style={styles.chip}
@@ -58,7 +86,10 @@ const ChipExample = () => {
             <Chip
               disabled
               avatar={
-                <Image source={require('../../assets/images/avatar.png')} />
+                <Image
+                  source={require('../../assets/images/avatar.png')}
+                  accessibilityIgnoresInvertColors
+                />
               }
               style={styles.chip}
             >
@@ -71,6 +102,35 @@ const ChipExample = () => {
             <Chip mode="outlined" onPress={() => {}} style={styles.chip}>
               Simple
             </Chip>
+            {isV3 && (
+              <>
+                <Chip
+                  mode="outlined"
+                  selected
+                  showSelectedOverlay
+                  onPress={() => {}}
+                  style={styles.chip}
+                >
+                  With selected overlay
+                </Chip>
+                <Chip
+                  mode="outlined"
+                  elevated
+                  onPress={() => {}}
+                  style={styles.chip}
+                >
+                  Elevated
+                </Chip>
+                <Chip
+                  mode="outlined"
+                  compact
+                  onPress={() => {}}
+                  style={styles.chip}
+                >
+                  Compact chip
+                </Chip>
+              </>
+            )}
             <Chip
               mode="outlined"
               onPress={() => {}}
@@ -91,7 +151,10 @@ const ChipExample = () => {
             <Chip
               mode="outlined"
               avatar={
-                <Image source={require('../../assets/images/avatar.png')} />
+                <Image
+                  source={require('../../assets/images/avatar.png')}
+                  accessibilityIgnoresInvertColors
+                />
               }
               onPress={() => {}}
               style={styles.chip}
@@ -102,7 +165,10 @@ const ChipExample = () => {
               selected
               mode="outlined"
               avatar={
-                <Image source={require('../../assets/images/avatar.png')} />
+                <Image
+                  source={require('../../assets/images/avatar.png')}
+                  accessibilityIgnoresInvertColors
+                />
               }
               onPress={() => {}}
               style={styles.chip}
@@ -122,7 +188,10 @@ const ChipExample = () => {
               disabled
               mode="outlined"
               avatar={
-                <Image source={require('../../assets/images/avatar.png')} />
+                <Image
+                  source={require('../../assets/images/avatar.png')}
+                  accessibilityIgnoresInvertColors
+                />
               }
               style={styles.chip}
             >
@@ -132,6 +201,38 @@ const ChipExample = () => {
         </List.Section>
         <List.Section title="Custom chip">
           <View style={styles.row}>
+            {isV3 && (
+              <>
+                <Chip
+                  mode="outlined"
+                  onPress={() => {}}
+                  compact
+                  avatar={
+                    <Image
+                      source={require('../../assets/images/avatar.png')}
+                      accessibilityIgnoresInvertColors
+                    />
+                  }
+                  style={[styles.chip, styles.customBorderRadius]}
+                >
+                  Compact with custom border radius
+                </Chip>
+                <Chip
+                  mode="flat"
+                  onPress={() => {}}
+                  compact
+                  avatar={
+                    <Image
+                      source={require('../../assets/images/avatar.png')}
+                      accessibilityIgnoresInvertColors
+                    />
+                  }
+                  style={[styles.chip, styles.customBorderRadius]}
+                >
+                  Compact with custom border radius
+                </Chip>
+              </>
+            )}
             <Chip
               mode="outlined"
               onPress={() => {}}
@@ -146,20 +247,17 @@ const ChipExample = () => {
               style={[
                 styles.chip,
                 {
-                  backgroundColor: color(colors.primary)
-                    .alpha(0.2)
-                    .rgb()
-                    .string(),
+                  backgroundColor: color(customColor).alpha(0.2).rgb().string(),
                 },
               ]}
-              selectedColor={colors.primary}
+              selectedColor={customColor}
             >
               Flat selected chip with custom color
             </Chip>
             <Chip
               onPress={() => {}}
               style={styles.chip}
-              selectedColor={colors.primary}
+              selectedColor={customColor}
             >
               Flat unselected chip with custom color
             </Chip>
@@ -170,13 +268,10 @@ const ChipExample = () => {
               style={[
                 styles.chip,
                 {
-                  backgroundColor: color(colors.primary)
-                    .alpha(0.2)
-                    .rgb()
-                    .string(),
+                  backgroundColor: color(customColor).alpha(0.2).rgb().string(),
                 },
               ]}
-              selectedColor={colors.primary}
+              selectedColor={customColor}
             >
               Outlined selected chip with custom color
             </Chip>
@@ -184,7 +279,7 @@ const ChipExample = () => {
               mode="outlined"
               onPress={() => {}}
               style={styles.chip}
-              selectedColor={colors.primary}
+              selectedColor={customColor}
             >
               Outlined unselected chip with custom color
             </Chip>
@@ -259,6 +354,9 @@ const styles = StyleSheet.create({
   fullWidthChip: {
     marginVertical: 4,
     marginHorizontal: 12,
+  },
+  customBorderRadius: {
+    borderRadius: 16,
   },
 });
 

@@ -1,18 +1,19 @@
 import React from 'react';
-import TextInputIcon, { IconAdornment } from './TextInputIcon';
-import TextInputAffix, { AffixAdornment } from './TextInputAffix';
-import { ADORNMENT_OFFSET, OUTLINED_INPUT_OFFSET } from '../constants';
 import type {
   LayoutChangeEvent,
   TextStyle,
   StyleProp,
   Animated,
 } from 'react-native';
+
+import { getConstants } from '../helpers';
+import { AdornmentSide, AdornmentType, InputMode } from './enums';
+import TextInputAffix, { AffixAdornment } from './TextInputAffix';
+import TextInputIcon, { IconAdornment } from './TextInputIcon';
 import type {
   AdornmentConfig,
   AdornmentStyleAdjustmentForNativeInput,
 } from './types';
-import { AdornmentSide, AdornmentType, InputMode } from './enums';
 
 export function getAdornmentConfig({
   left,
@@ -52,6 +53,7 @@ export function getAdornmentStyleAdjustmentForNativeInput({
   paddingHorizontal,
   inputOffset = 0,
   mode,
+  isV3,
 }: {
   inputOffset?: number;
   adornmentConfig: AdornmentConfig[];
@@ -59,7 +61,10 @@ export function getAdornmentStyleAdjustmentForNativeInput({
   rightAffixWidth: number;
   mode?: 'outlined' | 'flat';
   paddingHorizontal?: number | string;
+  isV3?: boolean;
 }): AdornmentStyleAdjustmentForNativeInput | {} {
+  const { OUTLINED_INPUT_OFFSET, ADORNMENT_OFFSET } = getConstants(isV3);
+
   if (adornmentConfig.length) {
     const adornmentStyleAdjustmentForNativeInput = adornmentConfig.map(
       ({ type, side }: AdornmentConfig) => {
@@ -152,7 +157,6 @@ const TextInputAdornment: React.FunctionComponent<TextInputAdornmentProps> = ({
           }
 
           const commonProps = {
-            key: side,
             side: side,
             testID: `${side}-${type}-adornment`,
             isTextInputFocused,
@@ -162,6 +166,7 @@ const TextInputAdornment: React.FunctionComponent<TextInputAdornmentProps> = ({
             return (
               <IconAdornment
                 {...commonProps}
+                key={side}
                 icon={inputAdornmentComponent}
                 topPosition={topPosition[AdornmentType.Icon]}
                 forceFocus={forceFocus}
@@ -171,6 +176,7 @@ const TextInputAdornment: React.FunctionComponent<TextInputAdornmentProps> = ({
             return (
               <AffixAdornment
                 {...commonProps}
+                key={side}
                 topPosition={topPosition[AdornmentType.Affix][side]}
                 affix={inputAdornmentComponent}
                 textStyle={textStyle}

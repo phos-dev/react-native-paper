@@ -1,43 +1,102 @@
 import * as React from 'react';
 import {
   Animated,
-  TextStyle,
   I18nManager,
   StyleProp,
   StyleSheet,
+  TextStyle,
 } from 'react-native';
-import { withTheme } from '../../core/theming';
+
+import { withInternalTheme } from '../../core/theming';
+import { Font, InternalTheme, MD3TypescaleKey } from '../../types';
 
 type Props = React.ComponentPropsWithRef<typeof Animated.Text> & {
+  /**
+   * Variant defines appropriate text styles for type role and its size.
+   * Available variants:
+   *
+   *  Display: `displayLarge`, `displayMedium`, `displaySmall`
+   *
+   *  Headline: `headlineLarge`, `headlineMedium`, `headlineSmall`
+   *
+   *  Title: `titleLarge`, `titleMedium`, `titleSmall`
+   *
+   *  Label:  `labelLarge`, `labelMedium`, `labelSmall`
+   *
+   *  Body: `bodyLarge`, `bodyMedium`, `bodySmall`
+   */
+  variant?: keyof typeof MD3TypescaleKey;
   style?: StyleProp<TextStyle>;
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
 };
 
 /**
- * Text component which follows styles from the theme.
+ * Animated text component which follows styles from the theme.
  *
  * @extends Text props https://reactnative.dev/docs/text#props
  */
-function AnimatedText({ style, theme, ...rest }: Props) {
-  const writingDirection = I18nManager.isRTL ? 'rtl' : 'ltr';
+function AnimatedText({ style, theme, variant, ...rest }: Props) {
+  const writingDirection = I18nManager.getConstants().isRTL ? 'rtl' : 'ltr';
 
-  return (
-    <Animated.Text
-      {...rest}
-      style={[
-        styles.text,
-        {
-          ...theme.fonts.regular,
-          color: theme.colors.text,
-          writingDirection,
-        },
-        style,
-      ]}
-    />
-  );
+  if (theme.isV3 && variant) {
+    const stylesByVariant = Object.keys(MD3TypescaleKey).reduce(
+      (acc, key) => {
+        const { fontSize, fontWeight, lineHeight, letterSpacing, fontFamily } =
+          theme.fonts[key as keyof typeof MD3TypescaleKey];
+
+        return {
+          ...acc,
+          [key]: {
+            fontFamily,
+            fontSize,
+            fontWeight,
+            lineHeight: lineHeight,
+            letterSpacing,
+            color: theme.colors.onSurface,
+          },
+        };
+      },
+      {} as {
+        [key in MD3TypescaleKey]: {
+          fontSize: number;
+          fontWeight: Font['fontWeight'];
+          lineHeight: number;
+          letterSpacing: number;
+        };
+      }
+    );
+
+    const styleForVariant = stylesByVariant[variant];
+
+    return (
+      <Animated.Text
+        {...rest}
+        style={[styleForVariant, styles.text, { writingDirection }, style]}
+      />
+    );
+  } else {
+    const font = !theme.isV3 ? theme.fonts.regular : theme.fonts.bodyMedium;
+    const textStyle = {
+      ...font,
+      color: theme.isV3 ? theme.colors.onSurface : theme.colors.text,
+    };
+    return (
+      <Animated.Text
+        {...rest}
+        style={[
+          styles.text,
+          textStyle,
+          {
+            writingDirection,
+          },
+          style,
+        ]}
+      />
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -46,4 +105,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(AnimatedText);
+export default withInternalTheme(AnimatedText);

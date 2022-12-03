@@ -1,17 +1,19 @@
 import * as React from 'react';
-import color from 'color';
 import {
   Animated,
-  StyleSheet,
-  StyleProp,
-  TextStyle,
   LayoutChangeEvent,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
 } from 'react-native';
-import AnimatedText from './Typography/AnimatedText';
-import { withTheme } from '../core/theming';
-import type { $Omit } from '../types';
 
-type Props = $Omit<
+import color from 'color';
+
+import { withInternalTheme } from '../core/theming';
+import type { $Omit, InternalTheme } from '../types';
+import AnimatedText from './Typography/AnimatedText';
+
+export type Props = $Omit<
   $Omit<React.ComponentPropsWithRef<typeof AnimatedText>, 'padding'>,
   'type'
 > & {
@@ -35,7 +37,7 @@ type Props = $Omit<
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
   /**
    * TestID used for testing purposes
    */
@@ -46,7 +48,7 @@ type Props = $Omit<
  * Helper text is used in conjuction with input elements to provide additional hints for the user.
  *
  * <div class="screenshots">
- *   <img class="medium" src="screenshots/helper-text.gif" />
+ *   <img class="small" src="screenshots/helper-text.gif" />
  * </div>
  *
  * ## Usage
@@ -123,8 +125,8 @@ const HelperText = ({
 
   const textColor =
     type === 'error'
-      ? colors.error
-      : color(colors.text)
+      ? colors?.error
+      : color(theme.isV3 ? theme.colors.onSurface : theme?.colors?.text)
           .alpha(dark ? 0.7 : 0.54)
           .rgb()
           .string();
@@ -170,4 +172,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(HelperText);
+export default withInternalTheme(HelperText);

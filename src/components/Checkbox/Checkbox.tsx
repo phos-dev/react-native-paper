@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { Platform } from 'react-native';
-import CheckboxIOS from './CheckboxIOS';
-import CheckboxAndroid from './CheckboxAndroid';
-import { withTheme } from '../../core/theming';
 
-type Props = {
+import { withInternalTheme } from '../../core/theming';
+import type { InternalTheme } from '../../types';
+import CheckboxAndroid from './CheckboxAndroid';
+import CheckboxIOS from './CheckboxIOS';
+
+export type Props = {
   /**
    * Status of checkbox.
    */
@@ -28,7 +30,7 @@ type Props = {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
   /**
    * testID to be used on tests.
    */
@@ -85,9 +87,9 @@ const Checkbox = (props: Props) =>
     <CheckboxAndroid {...props} />
   );
 
-export default withTheme(Checkbox);
+export default withInternalTheme(Checkbox);
 
 // @component-docs ignore-next-line
-const CheckboxWithTheme = withTheme(Checkbox);
+const CheckboxWithTheme = withInternalTheme(Checkbox);
 // @component-docs ignore-next-line
 export { CheckboxWithTheme as Checkbox };

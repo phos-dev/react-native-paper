@@ -1,77 +1,34 @@
 import * as React from 'react';
-import { I18nManager } from 'react-native';
+import { I18nManager, StyleSheet } from 'react-native';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Updates from 'expo-updates';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { InitialState, NavigationContainer } from '@react-navigation/native';
 import { useKeepAwake } from 'expo-keep-awake';
 import { StatusBar } from 'expo-status-bar';
-import { InitialState, NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import * as Updates from 'expo-updates';
 import {
   Provider as PaperProvider,
-  DarkTheme,
-  DefaultTheme,
+  MD3DarkTheme,
+  MD3LightTheme,
+  MD2DarkTheme,
+  MD2LightTheme,
+  MD2Theme,
+  MD3Theme,
+  useTheme,
 } from 'react-native-paper';
-import App from './RootNavigator';
-import DrawerItems from './DrawerItems';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { isWeb } from '../utils';
 
-// Add new typescript properties to the theme
-declare global {
-  namespace ReactNativePaper {
-    interface ThemeFonts {
-      superLight: ThemeFont;
-    }
-    interface ThemeColors {
-      customColor: string;
-    }
-    interface ThemeAnimation {
-      customProperty: number;
-    }
-    interface Theme {
-      userDefinedThemeProperty: string;
-    }
-  }
-}
+import { isWeb } from '../utils';
+import DrawerItems from './DrawerItems';
+import App from './RootNavigator';
 
 const PERSISTENCE_KEY = 'NAVIGATION_STATE';
 const PREFERENCES_KEY = 'APP_PREFERENCES';
 
-const CustomDarkTheme: ReactNativePaper.Theme = {
-  ...DarkTheme,
-  colors: {
-    ...DarkTheme.colors,
-    customColor: '#BADA55',
-  },
-  fonts: {
-    ...DarkTheme.fonts,
-    superLight: { ...DarkTheme.fonts['light'] },
-  },
-  userDefinedThemeProperty: '',
-  animation: {
-    ...DarkTheme.animation,
-    customProperty: 1,
-  },
-};
-
-const CustomDefaultTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    customColor: '#BADA55',
-  },
-  fonts: {
-    ...DefaultTheme.fonts,
-    superLight: { ...DefaultTheme.fonts['light'] },
-  },
-  userDefinedThemeProperty: '',
-  animation: {
-    ...DefaultTheme.animation,
-    customProperty: 1,
-  },
-};
-
 export const PreferencesContext = React.createContext<any>(null);
+
+export const useExampleTheme = () => useTheme<MD2Theme | MD3Theme>();
 
 const DrawerContent = () => {
   return (
@@ -80,6 +37,9 @@ const DrawerContent = () => {
         <DrawerItems
           toggleTheme={preferences.toggleTheme}
           toggleRTL={preferences.toggleRtl}
+          toggleThemeVersion={preferences.toggleThemeVersion}
+          toggleCollapsed={preferences.toggleCollapsed}
+          collapsed={preferences.collapsed}
           isRTL={preferences.rtl}
           isDarkTheme={preferences.theme.dark}
         />
@@ -98,9 +58,25 @@ export default function PaperExample() {
     InitialState | undefined
   >();
 
-  const [theme, setTheme] =
-    React.useState<ReactNativePaper.Theme>(CustomDefaultTheme);
-  const [rtl, setRtl] = React.useState<boolean>(I18nManager.isRTL);
+  const [isDarkMode, setIsDarkMode] = React.useState(false);
+  const [themeVersion, setThemeVersion] = React.useState<2 | 3>(3);
+  const [rtl, setRtl] = React.useState<boolean>(
+    I18nManager.getConstants().isRTL
+  );
+  const [collapsed, setCollapsed] = React.useState(false);
+
+  const themeMode = isDarkMode ? 'dark' : 'light';
+
+  const theme = {
+    2: {
+      light: MD2LightTheme,
+      dark: MD2DarkTheme,
+    },
+    3: {
+      light: MD3LightTheme,
+      dark: MD3DarkTheme,
+    },
+  }[themeVersion][themeMode];
 
   React.useEffect(() => {
     const restoreState = async () => {
@@ -128,10 +104,7 @@ export default function PaperExample() {
         const preferences = JSON.parse(prefString || '');
 
         if (preferences) {
-          // eslint-disable-next-line react/no-did-mount-set-state
-          setTheme(
-            preferences.theme === 'dark' ? CustomDarkTheme : CustomDefaultTheme
-          );
+          setIsDarkMode(preferences.theme === 'dark');
 
           if (typeof preferences.rtl === 'boolean') {
             setRtl(preferences.rtl);
@@ -151,7 +124,7 @@ export default function PaperExample() {
         await AsyncStorage.setItem(
           PREFERENCES_KEY,
           JSON.stringify({
-            theme: theme === DarkTheme ? 'dark' : 'light',
+            theme: themeMode,
             rtl,
           })
         );
@@ -159,7 +132,7 @@ export default function PaperExample() {
         // ignore error
       }
 
-      if (I18nManager.isRTL !== rtl) {
+      if (I18nManager.getConstants().isRTL !== rtl) {
         I18nManager.forceRTL(rtl);
         if (!isWeb) {
           Updates.reloadAsync();
@@ -168,19 +141,20 @@ export default function PaperExample() {
     };
 
     savePrefs();
-  }, [rtl, theme]);
+  }, [rtl, themeMode]);
 
   const preferences = React.useMemo(
     () => ({
-      toggleTheme: () =>
-        setTheme((theme) =>
-          theme === CustomDefaultTheme ? CustomDarkTheme : CustomDefaultTheme
-        ),
+      toggleTheme: () => setIsDarkMode((oldValue) => !oldValue),
       toggleRtl: () => setRtl((rtl) => !rtl),
+      toggleCollapsed: () => setCollapsed(!collapsed),
+      toggleThemeVersion: () =>
+        setThemeVersion((oldThemeVersion) => (oldThemeVersion === 2 ? 3 : 2)),
+      collapsed,
       rtl,
       theme,
     }),
-    [rtl, theme]
+    [rtl, theme, collapsed]
   );
 
   if (!isReady) {
@@ -201,7 +175,12 @@ export default function PaperExample() {
               {isWeb ? (
                 <App />
               ) : (
-                <Drawer.Navigator drawerContent={() => <DrawerContent />}>
+                <Drawer.Navigator
+                  screenOptions={{
+                    drawerStyle: collapsed && styles.collapsed,
+                  }}
+                  drawerContent={() => <DrawerContent />}
+                >
                   <Drawer.Screen
                     name="Home"
                     component={App}
@@ -209,7 +188,7 @@ export default function PaperExample() {
                   />
                 </Drawer.Navigator>
               )}
-              <StatusBar style="light" />
+              <StatusBar style={!theme.isV3 || theme.dark ? 'light' : 'dark'} />
             </NavigationContainer>
           </React.Fragment>
         </PreferencesContext.Provider>
@@ -217,3 +196,9 @@ export default function PaperExample() {
     </PaperProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  collapsed: {
+    width: 80,
+  },
+});

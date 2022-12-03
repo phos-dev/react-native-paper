@@ -1,13 +1,15 @@
 import * as React from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
+
 import {
-  Subheading,
   Button,
   Portal,
   Dialog,
   RadioButton,
   TouchableRipple,
 } from 'react-native-paper';
+
+import { TextComponent } from './DialogTextComponent';
 
 type Props = {
   visible: boolean;
@@ -34,7 +36,9 @@ const DialogWithRadioBtns = ({ visible, close }: Props) => {
                       status={checked === 'normal' ? 'checked' : 'unchecked'}
                     />
                   </View>
-                  <Subheading style={styles.text}>Option 1</Subheading>
+                  <TextComponent isSubheading style={styles.text}>
+                    Option 1
+                  </TextComponent>
                 </View>
               </TouchableRipple>
               <TouchableRipple onPress={() => setChecked('second')}>
@@ -45,7 +49,9 @@ const DialogWithRadioBtns = ({ visible, close }: Props) => {
                       status={checked === 'second' ? 'checked' : 'unchecked'}
                     />
                   </View>
-                  <Subheading style={styles.text}>Option 2</Subheading>
+                  <TextComponent isSubheading style={styles.text}>
+                    Option 2
+                  </TextComponent>
                 </View>
               </TouchableRipple>
               <TouchableRipple onPress={() => setChecked('third')}>
@@ -56,7 +62,9 @@ const DialogWithRadioBtns = ({ visible, close }: Props) => {
                       status={checked === 'third' ? 'checked' : 'unchecked'}
                     />
                   </View>
-                  <Subheading style={styles.text}>Option 3</Subheading>
+                  <TextComponent isSubheading style={styles.text}>
+                    Option 3
+                  </TextComponent>
                 </View>
               </TouchableRipple>
               <TouchableRipple onPress={() => setChecked('fourth')}>
@@ -67,7 +75,9 @@ const DialogWithRadioBtns = ({ visible, close }: Props) => {
                       status={checked === 'fourth' ? 'checked' : 'unchecked'}
                     />
                   </View>
-                  <Subheading style={styles.text}>Option 4</Subheading>
+                  <TextComponent isSubheading style={styles.text}>
+                    Option 4
+                  </TextComponent>
                 </View>
               </TouchableRipple>
             </View>

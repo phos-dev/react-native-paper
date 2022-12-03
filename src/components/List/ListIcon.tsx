@@ -1,8 +1,11 @@
 import * as React from 'react';
 import { View, ViewStyle, StyleSheet, StyleProp } from 'react-native';
+
+import { withInternalTheme } from '../../core/theming';
+import type { InternalTheme } from '../../types';
 import Icon, { IconSource } from '../Icon';
 
-type Props = {
+export type Props = {
   /**
    * Icon to show.
    */
@@ -12,6 +15,10 @@ type Props = {
    */
   color?: string;
   style?: StyleProp<ViewStyle>;
+  /**
+   * @optional
+   */
+  theme: InternalTheme;
 };
 
 const ICON_SIZE = 24;
@@ -28,21 +35,24 @@ const ICON_SIZE = 24;
  * ## Usage
  * ```js
  * import * as React from 'react';
- * import { List, Colors } from 'react-native-paper';
+ * import { List, MD3Colors } from 'react-native-paper';
  *
  * const MyComponent = () => (
  *   <>
- *     <List.Icon color={Colors.blue500} icon="folder" />
- *     <List.Icon color={Colors.blue500} icon="equal" />
- *     <List.Icon color={Colors.blue500} icon="calendar" />
+ *     <List.Icon color={MD3Colors.tertiary70} icon="folder" />
+ *     <List.Icon color={MD3Colors.tertiary70} icon="equal" />
+ *     <List.Icon color={MD3Colors.tertiary70} icon="calendar" />
  *   </>
  * );
  *
  * export default MyComponent;
  * ```
  */
-const ListIcon = ({ icon, color: iconColor, style }: Props) => (
-  <View style={[styles.item, style]} pointerEvents="box-none">
+const ListIcon = ({ icon, color: iconColor, style, theme }: Props) => (
+  <View
+    style={[theme.isV3 ? styles.itemV3 : styles.item, style]}
+    pointerEvents="box-none"
+  >
     <Icon source={icon} size={ICON_SIZE} color={iconColor} />
   </View>
 );
@@ -55,8 +65,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  itemV3: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 ListIcon.displayName = 'List.Icon';
 
-export default ListIcon;
+export default withInternalTheme(ListIcon);

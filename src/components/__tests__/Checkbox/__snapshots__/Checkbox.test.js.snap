@@ -7,12 +7,15 @@ exports[`renders Checkbox with custom testID 1`] = `
   accessibilityState={
     Object {
       "checked": true,
-      "disabled": undefined,
+      "disabled": true,
     }
   }
   accessible={true}
-  focusable={false}
+  collapsable={false}
+  focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -24,6 +27,7 @@ exports[`renders Checkbox with custom testID 1`] = `
       Object {
         "overflow": "hidden",
       },
+      false,
       Object {
         "borderRadius": 18,
         "padding": 6,
@@ -48,16 +52,32 @@ exports[`renders Checkbox with custom testID 1`] = `
       style={
         Array [
           Object {
-            "backgroundColor": "transparent",
-          },
-          Object {
-            "color": "#03dac4",
+            "color": "rgba(103, 80, 164, 1)",
             "fontSize": 24,
           },
+          Array [
+            Object {
+              "lineHeight": 24,
+              "transform": Array [
+                Object {
+                  "scaleX": 1,
+                },
+              ],
+            },
+            Object {
+              "backgroundColor": "transparent",
+            },
+          ],
+          Object {
+            "fontFamily": "Material Design Icons",
+            "fontStyle": "normal",
+            "fontWeight": "normal",
+          },
+          Object {},
         ]
       }
     >
-      □
+      󰄬
     </Text>
   </View>
 </View>
@@ -70,12 +90,16 @@ exports[`renders checked Checkbox with color 1`] = `
   accessibilityState={
     Object {
       "checked": true,
-      "disabled": undefined,
+      "disabled": true,
     }
   }
   accessible={true}
-  focusable={false}
+  collapsable={false}
+  color="red"
+  focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -87,6 +111,7 @@ exports[`renders checked Checkbox with color 1`] = `
       Object {
         "overflow": "hidden",
       },
+      false,
       Object {
         "borderRadius": 18,
         "padding": 6,
@@ -110,16 +135,32 @@ exports[`renders checked Checkbox with color 1`] = `
       style={
         Array [
           Object {
-            "backgroundColor": "transparent",
-          },
-          Object {
             "color": "red",
             "fontSize": 24,
           },
+          Array [
+            Object {
+              "lineHeight": 24,
+              "transform": Array [
+                Object {
+                  "scaleX": 1,
+                },
+              ],
+            },
+            Object {
+              "backgroundColor": "transparent",
+            },
+          ],
+          Object {
+            "fontFamily": "Material Design Icons",
+            "fontStyle": "normal",
+            "fontWeight": "normal",
+          },
+          Object {},
         ]
       }
     >
-      □
+      󰄬
     </Text>
   </View>
 </View>
@@ -132,12 +173,15 @@ exports[`renders checked Checkbox with onPress 1`] = `
   accessibilityState={
     Object {
       "checked": true,
-      "disabled": undefined,
+      "disabled": false,
     }
   }
   accessible={true}
+  collapsable={false}
   focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -149,6 +193,7 @@ exports[`renders checked Checkbox with onPress 1`] = `
       Object {
         "overflow": "hidden",
       },
+      false,
       Object {
         "borderRadius": 18,
         "padding": 6,
@@ -172,16 +217,32 @@ exports[`renders checked Checkbox with onPress 1`] = `
       style={
         Array [
           Object {
-            "backgroundColor": "transparent",
-          },
-          Object {
-            "color": "#03dac4",
+            "color": "rgba(103, 80, 164, 1)",
             "fontSize": 24,
           },
+          Array [
+            Object {
+              "lineHeight": 24,
+              "transform": Array [
+                Object {
+                  "scaleX": 1,
+                },
+              ],
+            },
+            Object {
+              "backgroundColor": "transparent",
+            },
+          ],
+          Object {
+            "fontFamily": "Material Design Icons",
+            "fontStyle": "normal",
+            "fontWeight": "normal",
+          },
+          Object {},
         ]
       }
     >
-      □
+      󰄬
     </Text>
   </View>
 </View>
@@ -194,12 +255,15 @@ exports[`renders indeterminate Checkbox 1`] = `
   accessibilityState={
     Object {
       "checked": false,
-      "disabled": undefined,
+      "disabled": false,
     }
   }
   accessible={true}
+  collapsable={false}
   focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -211,6 +275,7 @@ exports[`renders indeterminate Checkbox 1`] = `
       Object {
         "overflow": "hidden",
       },
+      false,
       Object {
         "borderRadius": 18,
         "padding": 6,
@@ -234,16 +299,32 @@ exports[`renders indeterminate Checkbox 1`] = `
       style={
         Array [
           Object {
-            "backgroundColor": "transparent",
-          },
-          Object {
-            "color": "#03dac4",
+            "color": "rgba(103, 80, 164, 1)",
             "fontSize": 24,
           },
+          Array [
+            Object {
+              "lineHeight": 24,
+              "transform": Array [
+                Object {
+                  "scaleX": 1,
+                },
+              ],
+            },
+            Object {
+              "backgroundColor": "transparent",
+            },
+          ],
+          Object {
+            "fontFamily": "Material Design Icons",
+            "fontStyle": "normal",
+            "fontWeight": "normal",
+          },
+          Object {},
         ]
       }
     >
-      □
+      󰍴
     </Text>
   </View>
 </View>
@@ -256,12 +337,16 @@ exports[`renders indeterminate Checkbox with color 1`] = `
   accessibilityState={
     Object {
       "checked": false,
-      "disabled": undefined,
+      "disabled": true,
     }
   }
   accessible={true}
-  focusable={false}
+  collapsable={false}
+  color="red"
+  focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -273,6 +358,7 @@ exports[`renders indeterminate Checkbox with color 1`] = `
       Object {
         "overflow": "hidden",
       },
+      false,
       Object {
         "borderRadius": 18,
         "padding": 6,
@@ -296,16 +382,32 @@ exports[`renders indeterminate Checkbox with color 1`] = `
       style={
         Array [
           Object {
-            "backgroundColor": "transparent",
-          },
-          Object {
             "color": "red",
             "fontSize": 24,
           },
+          Array [
+            Object {
+              "lineHeight": 24,
+              "transform": Array [
+                Object {
+                  "scaleX": 1,
+                },
+              ],
+            },
+            Object {
+              "backgroundColor": "transparent",
+            },
+          ],
+          Object {
+            "fontFamily": "Material Design Icons",
+            "fontStyle": "normal",
+            "fontWeight": "normal",
+          },
+          Object {},
         ]
       }
     >
-      □
+      󰍴
     </Text>
   </View>
 </View>
@@ -318,12 +420,16 @@ exports[`renders unchecked Checkbox with color 1`] = `
   accessibilityState={
     Object {
       "checked": true,
-      "disabled": undefined,
+      "disabled": true,
     }
   }
   accessible={true}
-  focusable={false}
+  collapsable={false}
+  color="red"
+  focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -335,6 +441,7 @@ exports[`renders unchecked Checkbox with color 1`] = `
       Object {
         "overflow": "hidden",
       },
+      false,
       Object {
         "borderRadius": 18,
         "padding": 6,
@@ -358,16 +465,32 @@ exports[`renders unchecked Checkbox with color 1`] = `
       style={
         Array [
           Object {
-            "backgroundColor": "transparent",
-          },
-          Object {
             "color": "red",
             "fontSize": 24,
           },
+          Array [
+            Object {
+              "lineHeight": 24,
+              "transform": Array [
+                Object {
+                  "scaleX": 1,
+                },
+              ],
+            },
+            Object {
+              "backgroundColor": "transparent",
+            },
+          ],
+          Object {
+            "fontFamily": "Material Design Icons",
+            "fontStyle": "normal",
+            "fontWeight": "normal",
+          },
+          Object {},
         ]
       }
     >
-      □
+      󰄬
     </Text>
   </View>
 </View>
@@ -380,12 +503,15 @@ exports[`renders unchecked Checkbox with onPress 1`] = `
   accessibilityState={
     Object {
       "checked": false,
-      "disabled": undefined,
+      "disabled": false,
     }
   }
   accessible={true}
+  collapsable={false}
   focusable={true}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -397,6 +523,7 @@ exports[`renders unchecked Checkbox with onPress 1`] = `
       Object {
         "overflow": "hidden",
       },
+      false,
       Object {
         "borderRadius": 18,
         "padding": 6,
@@ -420,16 +547,32 @@ exports[`renders unchecked Checkbox with onPress 1`] = `
       style={
         Array [
           Object {
-            "backgroundColor": "transparent",
-          },
-          Object {
-            "color": "#03dac4",
+            "color": "rgba(103, 80, 164, 1)",
             "fontSize": 24,
           },
+          Array [
+            Object {
+              "lineHeight": 24,
+              "transform": Array [
+                Object {
+                  "scaleX": 1,
+                },
+              ],
+            },
+            Object {
+              "backgroundColor": "transparent",
+            },
+          ],
+          Object {
+            "fontFamily": "Material Design Icons",
+            "fontStyle": "normal",
+            "fontWeight": "normal",
+          },
+          Object {},
         ]
       }
     >
-      □
+      󰄬
     </Text>
   </View>
 </View>

@@ -1,10 +1,13 @@
 import * as React from 'react';
-import color from 'color';
-import { StyleSheet, StyleProp, View, ViewStyle } from 'react-native';
-import { black, white } from '../../styles/colors';
-import { withTheme } from '../../core/theming';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-type Props = React.ComponentPropsWithRef<typeof View> & {
+import color from 'color';
+
+import { withInternalTheme } from '../../core/theming';
+import { black, white } from '../../styles/themes/v2/colors';
+import type { InternalTheme } from '../../types';
+
+export type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * Content of the `DataTableHeader`.
    */
@@ -13,7 +16,7 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
 };
 
 /**
@@ -50,10 +53,12 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
  */
 
 const DataTableHeader = ({ children, style, theme, ...rest }: Props) => {
-  const borderBottomColor = color(theme.dark ? white : black)
-    .alpha(0.12)
-    .rgb()
-    .string();
+  const borderBottomColor = theme.isV3
+    ? theme.colors.surfaceVariant
+    : color(theme.dark ? white : black)
+        .alpha(0.12)
+        .rgb()
+        .string();
 
   return (
     <View {...rest} style={[styles.header, { borderBottomColor }, style]}>
@@ -73,7 +78,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(DataTableHeader);
+export default withInternalTheme(DataTableHeader);
 
 // @component-docs ignore-next-line
 export { DataTableHeader };

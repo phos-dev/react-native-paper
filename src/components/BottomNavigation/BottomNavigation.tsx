@@ -1,38 +1,44 @@
 import * as React from 'react';
 import {
-  View,
   Animated,
+  EasingFunction,
+  Platform,
+  StyleProp,
+  StyleSheet,
   TouchableWithoutFeedback,
   TouchableWithoutFeedbackProps,
-  StyleSheet,
-  StyleProp,
-  Platform,
+  View,
   ViewStyle,
 } from 'react-native';
-import { getBottomSpace } from 'react-native-iphone-x-helper';
+
 import color from 'color';
+import { getBottomSpace } from 'react-native-iphone-x-helper';
+
+import { withInternalTheme } from '../../core/theming';
 import overlay from '../../styles/overlay';
-import Icon, { IconSource } from '../Icon';
-import Surface from '../Surface';
-import Badge from '../Badge';
-import TouchableRipple from '../TouchableRipple/TouchableRipple';
-import Text from '../Typography/Text';
-import { black, white } from '../../styles/colors';
-import { withTheme } from '../../core/theming';
+import { black, white } from '../../styles/themes/v2/colors';
+import type { InternalTheme } from '../../types';
 import useAnimatedValue from '../../utils/useAnimatedValue';
 import useAnimatedValueArray from '../../utils/useAnimatedValueArray';
-import useLayout from '../../utils/useLayout';
 import useIsKeyboardShown from '../../utils/useIsKeyboardShown';
+import useLayout from '../../utils/useLayout';
+import Badge from '../Badge';
+import Icon, { IconSource } from '../Icon';
+import Surface from '../Surface';
+import TouchableRipple from '../TouchableRipple/TouchableRipple';
+import Text from '../Typography/Text';
 import BottomNavigationRouteScreen from './BottomNavigationRouteScreen';
 
 type Route = {
   key: string;
   title?: string;
-  icon?: IconSource;
+  focusedIcon?: IconSource;
+  unfocusedIcon?: IconSource;
   badge?: string | number | boolean;
   color?: string;
   accessibilityLabel?: string;
   testID?: string;
+  lazy?: boolean;
 };
 
 type NavigationState = {
@@ -54,18 +60,24 @@ type TouchableProps = TouchableWithoutFeedbackProps & {
   rippleColor?: string;
 };
 
-type Props = {
+export type Props = {
   /**
    * Whether the shifting style is used, the active tab icon shifts up to show the label and the inactive tabs won't have a label.
    *
-   * By default, this is `true` when you have more than 3 tabs.
+   * By default, this is `false` with theme version 3 and `true` when you have more than 3 tabs.
    * Pass `shifting={false}` to explicitly disable this animation, or `shifting={true}` to always use this animation.
+   * Note that you need at least 2 tabs be able to run this animation.
    */
   shifting?: boolean;
   /**
    * Whether to show labels in tabs. When `false`, only icons will be displayed.
    */
   labeled?: boolean;
+  /**
+   * @supported Available in v5.x
+   * Whether tabs should be spread across the entire width.
+   */
+  compact?: boolean;
   /**
    * State for the bottom navigation. The state should contain the following properties:
    *
@@ -76,8 +88,9 @@ type Props = {
    *
    * - `key`: a unique key to identify the route (required)
    * - `title`: title of the route to use as the tab label
-   * - `icon`: icon to use as the tab icon, can be a string, an image source or a react component
-   * - `color`: color to use as background color for shifting bottom navigation
+   * - `focusedIcon`:  icon to use as the focused tab icon, can be a string, an image source or a react component @renamed Renamed from 'icon' to 'focusedIcon' in v5.x
+   * - `unfocusedIcon`:  icon to use as the unfocused tab icon, can be a string, an image source or a react component @supported Available in v5.x with theme version 3
+   * - `color`: color to use as background color for shifting bottom navigation @deprecated Deprecated in v5.x
    * - `badge`: badge to show on the tab icon, can be `true` to show a dot, `string` or `number` to show text.
    * - `accessibilityLabel`: accessibility label for the tab button
    * - `testID`: test id for the tab button
@@ -88,10 +101,10 @@ type Props = {
    * {
    *   index: 1,
    *   routes: [
-   *     { key: 'music', title: 'Music', icon: 'queue-music', color: '#3F51B5' },
-   *     { key: 'albums', title: 'Albums', icon: 'album', color: '#009688' },
-   *     { key: 'recents', title: 'Recents', icon: 'history', color: '#795548' },
-   *     { key: 'purchased', title: 'Purchased', icon: 'shopping-cart', color: '#607D8B' },
+   *     { key: 'music', title: 'Favorites', focusedIcon: 'heart', unfocusedIcon: 'heart-outline'},
+   *     { key: 'albums', title: 'Albums', focusedIcon: 'album' },
+   *     { key: 'recents', title: 'Recents', focusedIcon: 'history' },
+   *     { key: 'notifications', title: 'Notifications', focusedIcon: 'bell', unfocusedIcon: 'bell-outline' },
    *   ]
    * }
    * ```
@@ -165,18 +178,10 @@ type Props = {
    */
   renderTouchable?: (props: TouchableProps) => React.ReactNode;
   /**
-   * Get label text for the tab, uses `route.title` by default. Use `renderLabel` to replace label component.
-   */
-  getLabelText?: (props: { route: Route }) => string | undefined;
-  /**
    * Get accessibility label for the tab button. This is read by the screen reader when the user taps the tab.
    * Uses `route.accessibilityLabel` by default.
    */
   getAccessibilityLabel?: (props: { route: Route }) => string | undefined;
-  /**
-   * Get the id to locate this tab button in tests, uses `route.testID` by default.
-   */
-  getTestID?: (props: { route: Route }) => string | undefined;
   /**
    * Get badge for the tab, uses `route.badge` by default.
    */
@@ -185,6 +190,19 @@ type Props = {
    * Get color for the tab, uses `route.color` by default.
    */
   getColor?: (props: { route: Route }) => string | undefined;
+  /**
+   * Get label text for the tab, uses `route.title` by default. Use `renderLabel` to replace label component.
+   */
+  getLabelText?: (props: { route: Route }) => string | undefined;
+  /**
+   * @supported Available in v5.x
+   * Get lazy for the current screen. Uses true by default.
+   */
+  getLazy?: (props: { route: Route }) => boolean | undefined;
+  /**
+   * Get the id to locate this tab button in tests, uses `route.testID` by default.
+   */
+  getTestID?: (props: { route: Route }) => string | undefined;
   /**
    * Function to execute on tab press. It receives the route for the pressed tab, useful for things like scroll to top.
    */
@@ -203,6 +221,17 @@ type Props = {
    * Specify `sceneAnimationEnabled` as `false` to disable the animation.
    */
   sceneAnimationEnabled?: boolean;
+  /**
+   * @supported Available in v5.x
+   * The scene animation effect. Specify `'shifting'` for a different effect.
+   * By default, 'opacity' will be used.
+   */
+  sceneAnimationType?: 'opacity' | 'shifting';
+  /**
+   * @supported Available in v5.x
+   * The scene animation Easing.
+   */
+  sceneAnimationEasing?: EasingFunction | undefined;
   /**
    * Whether the bottom navigation bar is hidden when keyboard is shown.
    * On Android, this works best when [`windowSoftInputMode`](https://developer.android.com/guide/topics/manifest/activity-element#wsoft) is set to `adjustResize`.
@@ -234,7 +263,11 @@ type Props = {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
+  /**
+   * TestID used for testing purposes
+   */
+  testID?: string;
 };
 
 const MIN_RIPPLE_SCALE = 0.001; // Minimum scale is not 0 due to bug with animation
@@ -243,6 +276,7 @@ const MAX_TAB_WIDTH = 168;
 const BAR_HEIGHT = 56;
 const BOTTOM_INSET = getBottomSpace();
 const FAR_FAR_AWAY = Platform.OS === 'web' ? 0 : 9999;
+const OUTLINE_WIDTH = 64;
 
 const Touchable = ({
   route: _0,
@@ -281,10 +315,10 @@ const SceneComponent = React.memo(({ component, ...rest }: any) =>
  * For integration with React Navigation, you can use [react-navigation-material-bottom-tabs](https://github.com/react-navigation/react-navigation/tree/main/packages/material-bottom-tabs) and consult [createMaterialBottomTabNavigator](https://reactnavigation.org/docs/material-bottom-tab-navigator/) documentation.
  *
  * By default Bottom navigation uses primary color as a background, in dark theme with `adaptive` mode it will use surface colour instead.
- * See [Dark Theme](https://callstack.github.io/react-native-paper/theming.html#dark-theme) for more information.
+ * See [Dark InternalTheme](https://callstack.github.io/react-native-paper/theming.html#dark-theme) for more information.
  *
  * <div class="screenshots">
- *   <img class="medium" src="screenshots/bottom-navigation.gif" />
+ *   <img class="small" src="screenshots/bottom-navigation.gif" />
  * </div>
  *
  * ## Usage
@@ -298,18 +332,22 @@ const SceneComponent = React.memo(({ component, ...rest }: any) =>
  *
  * const RecentsRoute = () => <Text>Recents</Text>;
  *
+ * const NotificationsRoute = () => <Text>Notifications</Text>;
+ *
  * const MyComponent = () => {
  *   const [index, setIndex] = React.useState(0);
  *   const [routes] = React.useState([
- *     { key: 'music', title: 'Music', icon: 'queue-music' },
- *     { key: 'albums', title: 'Albums', icon: 'album' },
- *     { key: 'recents', title: 'Recents', icon: 'history' },
+ *     { key: 'music', title: 'Favorites', focusedIcon: 'heart', unfocusedIcon: 'heart-outline'},
+ *     { key: 'albums', title: 'Albums', focusedIcon: 'album' },
+ *     { key: 'recents', title: 'Recents', focusedIcon: 'history' },
+ *     { key: 'notifications', title: 'Notifications', focusedIcon: 'bell', unfocusedIcon: 'bell-outline' },
  *   ]);
  *
  *   const renderScene = BottomNavigation.SceneMap({
  *     music: MusicRoute,
  *     albums: AlbumsRoute,
  *     recents: RecentsRoute,
+ *     notifications: NotificationsRoute,
  *   });
  *
  *   return (
@@ -338,19 +376,32 @@ const BottomNavigation = ({
   getTestID = ({ route }: { route: Route }) => route.testID,
   activeColor,
   inactiveColor,
-  keyboardHidesNavigationBar = true,
+  keyboardHidesNavigationBar = Platform.OS === 'android',
   barStyle,
   labeled = true,
   style,
   theme,
   sceneAnimationEnabled = false,
+  sceneAnimationType = 'opacity',
+  sceneAnimationEasing,
   onTabPress,
   onIndexChange,
-  shifting = navigationState.routes.length > 3,
+  shifting = theme.isV3 ? false : navigationState.routes.length > 3,
   safeAreaInsets,
   labelMaxFontSizeMultiplier = 1,
+  compact = !theme.isV3,
+  testID = 'bottom-navigation',
+  getLazy = ({ route }: { route: Route }) => route.lazy,
 }: Props) => {
   const { scale } = theme.animation;
+
+  if (shifting && navigationState.routes.length < 2) {
+    shifting = false;
+
+    console.warn(
+      'BottomNavigation needs at least 2 tabs to run shifting animation'
+    );
+  }
 
   const focusedKey = navigationState.routes[navigationState.index].key;
 
@@ -370,6 +421,16 @@ const BottomNavigation = ({
   );
 
   /**
+   * Active state of individual tab item positions:
+   * -1 if they're before the active tab, 0 if they're active, 1 if they're after the active tab
+   */
+  const tabsPositionAnims = useAnimatedValueArray(
+    navigationState.routes.map((_, i) =>
+      i === navigationState.index ? 0 : i >= navigationState.index ? 1 : -1
+    )
+  );
+
+  /**
    * The top offset for each tab item to position it offscreen.
    * Placing items offscreen helps to save memory usage for inactive screens with removeClippedSubviews.
    * We use animated values for this to prevent unnecessary re-renders.
@@ -383,7 +444,7 @@ const BottomNavigation = ({
 
   /**
    * Index of the currently active tab. Used for setting the background color.
-   * We don't use the color as an animated value directly, because `setValue` seems to be buggy with colors.
+   * We don't use the color as an animated value directly, because `setValue` seems to be buggy with colors?.
    */
   const indexAnim = useAnimatedValue(navigationState.index);
 
@@ -439,14 +500,23 @@ const BottomNavigation = ({
       Animated.parallel([
         Animated.timing(rippleAnim, {
           toValue: 1,
-          duration: shifting ? 400 * scale : 0,
+          duration: theme.isV3 || shifting ? 400 * scale : 0,
           useNativeDriver: true,
         }),
         ...navigationState.routes.map((_, i) =>
           Animated.timing(tabsAnims[i], {
             toValue: i === index ? 1 : 0,
-            duration: shifting ? 150 * scale : 0,
+            duration: theme.isV3 || shifting ? 150 * scale : 0,
             useNativeDriver: true,
+            easing: sceneAnimationEasing,
+          })
+        ),
+        ...navigationState.routes.map((_, i) =>
+          Animated.timing(tabsPositionAnims[i], {
+            toValue: i === index ? 0 : i >= index ? 1 : -1,
+            duration: theme.isV3 || shifting ? 150 * scale : 0,
+            useNativeDriver: true,
+            easing: sceneAnimationEasing,
           })
         ),
       ]).start(({ finished }) => {
@@ -478,6 +548,9 @@ const BottomNavigation = ({
       rippleAnim,
       scale,
       tabsAnims,
+      tabsPositionAnims,
+      sceneAnimationEasing,
+      theme,
     ]
   );
 
@@ -541,7 +614,7 @@ const BottomNavigation = ({
   );
 
   const { routes } = navigationState;
-  const { colors, dark: isDarkTheme, mode } = theme;
+  const { colors, dark: isDarkTheme, mode, isV3 } = theme;
 
   const { backgroundColor: customBackground, elevation = 4 }: ViewStyle =
     StyleSheet.flatten(barStyle) || {};
@@ -549,10 +622,10 @@ const BottomNavigation = ({
   const approxBackgroundColor = customBackground
     ? customBackground
     : isDarkTheme && mode === 'adaptive'
-    ? overlay(elevation, colors.surface)
-    : colors.primary;
+    ? overlay(elevation, colors?.surface)
+    : colors?.primary;
 
-  const backgroundColor = shifting
+  const v2BackgroundColorInterpolation = shifting
     ? indexAnim.interpolate({
         inputRange: routes.map((_, i) => i),
         // FIXME: does outputRange support ColorValue or just strings?
@@ -563,17 +636,31 @@ const BottomNavigation = ({
       })
     : approxBackgroundColor;
 
+  const backgroundColor = isV3
+    ? customBackground || theme.colors.elevation.level2
+    : shifting
+    ? v2BackgroundColorInterpolation
+    : approxBackgroundColor;
+
   const isDark =
     typeof approxBackgroundColor === 'string'
       ? !color(approxBackgroundColor).isLight()
       : true;
 
   const textColor = isDark ? white : black;
+
   const activeTintColor =
-    typeof activeColor !== 'undefined' ? activeColor : textColor;
+    typeof activeColor !== 'undefined'
+      ? activeColor
+      : isV3
+      ? theme.colors.onSecondaryContainer
+      : textColor;
+
   const inactiveTintColor =
     typeof inactiveColor !== 'undefined'
       ? inactiveColor
+      : isV3
+      ? theme.colors.onSurfaceVariant
       : color(textColor).alpha(0.5).rgb().string();
 
   const touchColor = color(activeColor || activeTintColor)
@@ -596,10 +683,10 @@ const BottomNavigation = ({
   };
 
   return (
-    <View style={[styles.container, style]}>
-      <View style={[styles.content, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, style]} testID={testID}>
+      <View style={[styles.content, { backgroundColor: colors?.background }]}>
         {routes.map((route, index) => {
-          if (!loaded.includes(route.key)) {
+          if (getLazy({ route }) !== false && !loaded.includes(route.key)) {
             // Don't render a screen if we've never navigated to it
             return null;
           }
@@ -607,7 +694,10 @@ const BottomNavigation = ({
           const focused = navigationState.index === index;
 
           const opacity = sceneAnimationEnabled
-            ? tabsAnims[index]
+            ? tabsPositionAnims[index].interpolate({
+                inputRange: [-1, 0, 1],
+                outputRange: [0, 1, 0],
+              })
             : focused
             ? 1
             : 0;
@@ -621,6 +711,16 @@ const BottomNavigation = ({
             ? 0
             : FAR_FAR_AWAY;
 
+          const left =
+            sceneAnimationType === 'shifting'
+              ? tabsPositionAnims[index].interpolate({
+                  inputRange: [-1, 0, 1],
+                  outputRange: [-50, 0, 50],
+                })
+              : 0;
+
+          const zIndex = focused ? 1 : 0;
+
           return (
             <BottomNavigationRouteScreen
               key={route.key}
@@ -631,7 +731,7 @@ const BottomNavigation = ({
               }
               index={index}
               visibility={opacity}
-              style={[StyleSheet.absoluteFill, { opacity }]}
+              style={[StyleSheet.absoluteFill, { zIndex }]}
               collapsable={false}
               removeClippedSubviews={
                 // On iOS, set removeClippedSubviews to true only when not focused
@@ -639,7 +739,19 @@ const BottomNavigation = ({
                 Platform.OS === 'ios' ? navigationState.index !== index : true
               }
             >
-              <Animated.View style={[styles.content, { top }]}>
+              <Animated.View
+                {...(Platform.OS === 'android' && {
+                  needsOffscreenAlphaCompositing: sceneAnimationEnabled,
+                })}
+                renderToHardwareTextureAndroid={sceneAnimationEnabled}
+                style={[
+                  styles.content,
+                  {
+                    opacity: opacity,
+                    transform: [{ translateX: left }, { translateY: top }],
+                  },
+                ]}
+              >
                 {renderScene({ route, jumpTo })}
               </Animated.View>
             </BottomNavigationRouteScreen>
@@ -647,8 +759,10 @@ const BottomNavigation = ({
         })}
       </View>
       <Surface
+        {...(theme.isV3 && { elevation: 0 })}
         style={
           [
+            !theme.isV3 && { elevation: 4 },
             styles.bar,
             keyboardHidesNavigationBar
               ? {
@@ -678,13 +792,18 @@ const BottomNavigation = ({
         }
         onLayout={onLayout}
       >
-        <Animated.View style={[styles.barContent, { backgroundColor }]}>
+        <Animated.View
+          style={[styles.barContent, { backgroundColor }]}
+          testID={`${testID}-bar-content`}
+        >
           <View
             style={[
               styles.items,
               {
                 marginBottom: insets.bottom,
                 marginHorizontal: Math.max(insets.left, insets.right),
+              },
+              compact && {
                 maxWidth: maxTabBarWidth,
               },
             ]}
@@ -756,35 +875,99 @@ const BottomNavigation = ({
                 outputRange: [1, 0],
               });
 
+              const v3ActiveOpacity = focused ? 1 : 0;
+              const v3InactiveOpacity = shifting
+                ? inactiveOpacity
+                : focused
+                ? 0
+                : 1;
+
+              // Scale horizontally the outline pill
+              const outlineScale = focused
+                ? active.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.5, 1],
+                  })
+                : 0;
+
               const badge = getBadge({ route });
+
+              const activeLabelColor = !isV3
+                ? activeTintColor
+                : focused
+                ? theme.colors.onSurface
+                : theme.colors.onSurfaceVariant;
+
+              const inactiveLabelColor = !isV3
+                ? inactiveTintColor
+                : focused
+                ? theme.colors.onSurface
+                : theme.colors.onSurfaceVariant;
+
+              const badgeStyle = {
+                top: !isV3 ? -2 : typeof badge === 'boolean' ? 4 : 2,
+                right:
+                  (badge != null && typeof badge !== 'boolean'
+                    ? String(badge).length * -2
+                    : 0) - (!isV3 ? 2 : 0),
+              };
+
+              const isV3Shifting = isV3 && shifting && labeled;
+
+              const font = isV3 ? theme.fonts.labelMedium : {};
 
               return renderTouchable({
                 key: route.key,
                 route,
                 borderless: true,
                 centered: true,
-                rippleColor: touchColor,
+                rippleColor: isV3 ? 'transparent' : touchColor,
                 onPress: () => handleTabPress(index),
                 testID: getTestID({ route }),
                 accessibilityLabel: getAccessibilityLabel({ route }),
-                // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
-                accessibilityTraits: focused
-                  ? ['button', 'selected']
-                  : 'button',
-                accessibilityComponentType: 'button',
                 accessibilityRole: Platform.OS === 'ios' ? 'button' : 'tab',
                 accessibilityState: { selected: focused },
-                style: styles.item,
+                style: [styles.item, isV3 && styles.v3Item],
                 children: (
-                  <View pointerEvents="none">
+                  <View
+                    pointerEvents="none"
+                    style={
+                      isV3 &&
+                      (labeled
+                        ? styles.v3TouchableContainer
+                        : styles.v3NoLabelContainer)
+                    }
+                  >
                     <Animated.View
                       style={[
                         styles.iconContainer,
-                        { transform: [{ translateY }] },
+                        isV3 && styles.v3IconContainer,
+                        (!isV3 || isV3Shifting) && {
+                          transform: [{ translateY }],
+                        },
                       ]}
                     >
+                      {isV3 && focused && (
+                        <Animated.View
+                          style={[
+                            styles.outline,
+                            {
+                              transform: [
+                                {
+                                  scaleX: outlineScale,
+                                },
+                              ],
+                              backgroundColor: theme.colors.secondaryContainer,
+                            },
+                          ]}
+                        />
+                      )}
                       <Animated.View
-                        style={[styles.iconWrapper, { opacity: activeOpacity }]}
+                        style={[
+                          styles.iconWrapper,
+                          isV3 && styles.v3IconWrapper,
+                          { opacity: isV3 ? v3ActiveOpacity : activeOpacity },
+                        ]}
                       >
                         {renderIcon ? (
                           renderIcon({
@@ -794,7 +977,7 @@ const BottomNavigation = ({
                           })
                         ) : (
                           <Icon
-                            source={route.icon as IconSource}
+                            source={route.focusedIcon as IconSource}
                             color={activeTintColor}
                             size={24}
                           />
@@ -803,7 +986,10 @@ const BottomNavigation = ({
                       <Animated.View
                         style={[
                           styles.iconWrapper,
-                          { opacity: inactiveOpacity },
+                          isV3 && styles.v3IconWrapper,
+                          {
+                            opacity: isV3 ? v3InactiveOpacity : inactiveOpacity,
+                          },
                         ]}
                       >
                         {renderIcon ? (
@@ -814,25 +1000,19 @@ const BottomNavigation = ({
                           })
                         ) : (
                           <Icon
-                            source={route.icon as IconSource}
+                            source={
+                              theme.isV3 && route.unfocusedIcon !== undefined
+                                ? route.unfocusedIcon
+                                : (route.focusedIcon as IconSource)
+                            }
                             color={inactiveTintColor}
                             size={24}
                           />
                         )}
                       </Animated.View>
-                      <View
-                        style={[
-                          styles.badgeContainer,
-                          {
-                            right:
-                              (badge != null && typeof badge !== 'boolean'
-                                ? String(badge).length * -2
-                                : 0) - 2,
-                          },
-                        ]}
-                      >
+                      <View style={[styles.badgeContainer, badgeStyle]}>
                         {typeof badge === 'boolean' ? (
-                          <Badge visible={badge} size={8} />
+                          <Badge visible={badge} size={isV3 ? 6 : 8} />
                         ) : (
                           <Badge visible={badge != null} size={16}>
                             {badge}
@@ -844,25 +1024,34 @@ const BottomNavigation = ({
                       <Animated.View
                         style={[
                           styles.labelContainer,
-                          { transform: [{ scale }] },
+                          !isV3 && { transform: [{ scale }] },
                         ]}
                       >
                         <Animated.View
                           style={[
                             styles.labelWrapper,
-                            { opacity: activeOpacity },
+                            (!isV3 || isV3Shifting) && {
+                              opacity: activeOpacity,
+                            },
                           ]}
                         >
                           {renderLabel ? (
                             renderLabel({
                               route,
                               focused: true,
-                              color: activeTintColor,
+                              color: activeLabelColor,
                             })
                           ) : (
                             <Text
                               maxFontSizeMultiplier={labelMaxFontSizeMultiplier}
-                              style={[styles.label, { color: activeTintColor }]}
+                              variant="labelMedium"
+                              style={[
+                                styles.label,
+                                {
+                                  color: activeLabelColor,
+                                  ...font,
+                                },
+                              ]}
                             >
                               {getLabelText({ route })}
                             </Text>
@@ -879,17 +1068,21 @@ const BottomNavigation = ({
                               renderLabel({
                                 route,
                                 focused: false,
-                                color: inactiveTintColor,
+                                color: inactiveLabelColor,
                               })
                             ) : (
                               <Text
                                 maxFontSizeMultiplier={
                                   labelMaxFontSizeMultiplier
                                 }
+                                variant="labelMedium"
                                 selectable={false}
                                 style={[
                                   styles.label,
-                                  { color: inactiveTintColor },
+                                  {
+                                    color: inactiveLabelColor,
+                                    ...font,
+                                  },
                                 ]}
                               >
                                 {getLabelText({ route })}
@@ -899,7 +1092,7 @@ const BottomNavigation = ({
                         )}
                       </Animated.View>
                     ) : (
-                      <View style={styles.labelContainer} />
+                      !isV3 && <View style={styles.labelContainer} />
                     )}
                   </View>
                 ),
@@ -939,7 +1132,7 @@ BottomNavigation.SceneMap = (scenes: {
   );
 };
 
-export default withTheme(BottomNavigation);
+export default withInternalTheme(BottomNavigation);
 
 const styles = StyleSheet.create({
   container: {
@@ -953,7 +1146,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    elevation: 4,
   },
   barContent: {
     alignItems: 'center',
@@ -973,6 +1165,9 @@ const styles = StyleSheet.create({
     // The extra 4dp bottom padding is offset by label's height
     paddingVertical: 6,
   },
+  v3Item: {
+    paddingVertical: 0,
+  },
   ripple: {
     position: 'absolute',
   },
@@ -983,9 +1178,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     alignSelf: 'center',
   },
+  v3IconContainer: {
+    height: 32,
+    width: 32,
+    marginBottom: 4,
+    marginTop: 0,
+    justifyContent: 'center',
+  },
   iconWrapper: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
+  },
+  v3IconWrapper: {
+    top: 4,
   },
   labelContainer: {
     height: 16,
@@ -1010,6 +1215,20 @@ const styles = StyleSheet.create({
   badgeContainer: {
     position: 'absolute',
     left: 0,
-    top: -2,
+  },
+  v3TouchableContainer: {
+    paddingTop: 12,
+    paddingBottom: 16,
+  },
+  v3NoLabelContainer: {
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  outline: {
+    width: OUTLINE_WIDTH,
+    height: OUTLINE_WIDTH / 2,
+    borderRadius: OUTLINE_WIDTH / 4,
+    alignSelf: 'center',
   },
 });

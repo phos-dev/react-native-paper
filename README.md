@@ -18,19 +18,19 @@
 [![Chat][chat-badge]][chat]
 [![Sponsored by Callstack][callstack-badge]][callstack]
 
+ <p align="center"><i>React Native Paper is the cross-platform UI kit library containing a collection of customizable and production-ready components, which by default are following and respecting the Google’s Material Design guidelines.</i></p>
+
 ## Features
 
-- Follows [material design guidelines](https://material.io/guidelines/)
+- Follows [material design guidelines](https://m3.material.io/get-started/)
 - Works on both iOS and Android following [platform adaptation guidelines](https://material.io/design/platform-guidance/cross-platform-adaptation.html)
 - Full [theming support](https://callstack.github.io/react-native-paper/theming.html)
 
-Currently supported React Native version: `>= 0.50.3`
-
 ## Try it out
 
-Run the [example app](https://snack.expo.dev/@react-native-paper/github.com-callstack-react-native-paper:example) with [Expo](https://expo.dev/) to see it in action.
+🧑‍💻 Run the [example app](https://snack.expo.dev/@react-native-paper/react-native-paper-example_v5) with [Expo](https://expo.dev/) to see it in action. The source code for the examples are under the [/example](/example) folder.
 
-The source code for the examples are under the [/example](/example) folder.
+📲 You can also try out components in our demo apps available in the both stores [Android](https://play.google.com/store/apps/details?id=com.callstack.reactnativepaperexample&hl=pl&gl=US) and [ iOS](https://apps.apple.com/app/react-native-paper/id1548934513).
 
 ## Getting Started
 
@@ -46,7 +46,7 @@ Read the [contribution guidelines](/CONTRIBUTING.md) before contributing.
 
 ## Figma and Sketch component kits
 
-Use official component kits provided by [Material Design](https://material.io/resources). 
+Use official component kits provided by [Material Design](https://m3.material.io/).
 
 ## Made with ❤️ at Callstack
 
@@ -99,7 +99,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/all-contri
   </tr>
   <tr>
     <td align="center"><a href="https://twitter.com/_panpawel"><img src="https://avatars3.githubusercontent.com/u/3886886?v=4" width="100px;" alt="Paweł Szymański"/><br /><sub><b>Paweł Szymański</b></sub></a><br /><a href="https://github.com/callstack/react-native-paper/commits?author=pan-pawel" title="Code">💻</a> <a href="https://github.com/callstack/react-native-paper/commits?author=pan-pawel" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://github.com/jaysbytes"><img src="https://avatars1.githubusercontent.com/u/11561585?v=4" width="100px;" alt="Kuba"/><br /><sub><b>Kuba</b></sub></a><br /><a href="https://github.com/callstack/react-native-paper/commits?author=jaysbytes" title="Code">💻</a> <a href="#ideas-jaysbytes" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/jayu"><img src="https://avatars1.githubusercontent.com/u/11561585?v=4" width="100px;" alt="Kuba"/><br /><sub><b>Kuba</b></sub></a><br /><a href="https://github.com/callstack/react-native-paper/commits?author=jayu" title="Code">💻</a> <a href="#ideas-jayu" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://github.com/jbinda"><img src="https://avatars2.githubusercontent.com/u/21242757?v=4" width="100px;" alt="jbinda"/><br /><sub><b>jbinda</b></sub></a><br /><a href="https://github.com/callstack/react-native-paper/commits?author=jbinda" title="Code">💻</a> <a href="#ideas-jbinda" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>

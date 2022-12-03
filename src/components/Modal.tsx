@@ -3,23 +3,26 @@ import {
   Animated,
   BackHandler,
   Easing,
+  NativeEventSubscription,
   StyleProp,
   StyleSheet,
   TouchableWithoutFeedback,
-  ViewStyle,
   View,
-  NativeEventSubscription,
+  ViewStyle,
 } from 'react-native';
-import {
-  getStatusBarHeight,
-  getBottomSpace,
-} from 'react-native-iphone-x-helper';
-import Surface from './Surface';
-import { useTheme } from '../core/theming';
-import useAnimatedValue from '../utils/useAnimatedValue';
-import { addEventListener } from '../utils/addEventListener';
 
-type Props = {
+import {
+  getBottomSpace,
+  getStatusBarHeight,
+} from 'react-native-iphone-x-helper';
+import type { InternalTheme } from 'src/types';
+
+import { withInternalTheme } from '../core/theming';
+import { addEventListener } from '../utils/addEventListener';
+import useAnimatedValue from '../utils/useAnimatedValue';
+import Surface from './Surface';
+
+export type Props = {
   /**
    * Determines whether clicking outside the modal dismiss it.
    */
@@ -49,6 +52,14 @@ type Props = {
    * Use this prop to change the default wrapper style or to override safe area insets with marginTop and marginBottom.
    */
   style?: StyleProp<ViewStyle>;
+  /**
+   * @optional
+   */
+  theme: InternalTheme;
+  /**
+   * testID to be used on tests.
+   */
+  testID?: string;
 };
 
 const DEFAULT_DURATION = 220;
@@ -94,7 +105,7 @@ const BOTTOM_INSET = getBottomSpace();
  * export default MyComponent;
  * ```
  */
-export default function Modal({
+function Modal({
   dismissable = true,
   visible = false,
   overlayAccessibilityLabel = 'Close modal',
@@ -102,6 +113,8 @@ export default function Modal({
   children,
   contentContainerStyle,
   style,
+  theme,
+  testID = 'modal',
 }: Props) {
   const visibleRef = React.useRef(visible);
 
@@ -109,7 +122,7 @@ export default function Modal({
     visibleRef.current = visible;
   });
 
-  const { colors, animation } = useTheme();
+  const { scale } = theme.animation;
 
   const opacity = useAnimatedValue(visible ? 1 : 0);
 
@@ -138,8 +151,6 @@ export default function Modal({
       handleBack
     );
 
-    const { scale } = animation;
-
     Animated.timing(opacity, {
       toValue: 1,
       duration: scale * DEFAULT_DURATION,
@@ -158,7 +169,6 @@ export default function Modal({
 
   const hideModal = () => {
     removeListeners();
-    const { scale } = animation;
 
     Animated.timing(opacity, {
       toValue: 0,
@@ -208,6 +218,7 @@ export default function Modal({
       accessibilityLiveRegion="polite"
       style={StyleSheet.absoluteFill}
       onAccessibilityEscape={hideModal}
+      testID={testID}
     >
       <TouchableWithoutFeedback
         accessibilityLabel={overlayAccessibilityLabel}
@@ -217,9 +228,13 @@ export default function Modal({
         importantForAccessibility="no"
       >
         <Animated.View
+          testID={`${testID}-backdrop`}
           style={[
             styles.backdrop,
-            { backgroundColor: colors.backdrop, opacity },
+            {
+              backgroundColor: theme.colors?.backdrop,
+              opacity,
+            },
           ]}
         />
       </TouchableWithoutFeedback>
@@ -246,6 +261,8 @@ export default function Modal({
     </Animated.View>
   );
 }
+
+export default withInternalTheme(Modal);
 
 const styles = StyleSheet.create({
   backdrop: {

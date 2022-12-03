@@ -1,15 +1,17 @@
 import * as React from 'react';
 import {
+  StyleProp,
+  StyleSheet,
+  TextStyle,
   View,
   ViewStyle,
-  StyleSheet,
-  StyleProp,
-  TextStyle,
 } from 'react-native';
-import ListSubheader from './ListSubheader';
-import { withTheme } from '../../core/theming';
 
-type Props = React.ComponentPropsWithRef<typeof View> & {
+import { withInternalTheme } from '../../core/theming';
+import type { InternalTheme } from '../../types';
+import ListSubheader from './ListSubheader';
+
+export type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * Title text for the section.
    */
@@ -21,7 +23,7 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
   /**
    * Style that is passed to Title element.
    */
@@ -39,7 +41,7 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
  * ## Usage
  * ```js
  * import * as React from 'react';
- * import { List } from 'react-native-paper';
+ * import { List, MD3Colors } from 'react-native-paper';
  *
  * const MyComponent = () => (
  *   <List.Section>
@@ -47,7 +49,7 @@ type Props = React.ComponentPropsWithRef<typeof View> & {
  *     <List.Item title="First Item" left={() => <List.Icon icon="folder" />} />
  *     <List.Item
  *       title="Second Item"
- *       left={() => <List.Icon color="#000" icon="folder" />}
+ *       left={() => <List.Icon color={MD3Colors.tertiary70} icon="folder" />}
  *     />
  *   </List.Section>
  * );
@@ -76,4 +78,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(ListSection);
+export default withInternalTheme(ListSection);

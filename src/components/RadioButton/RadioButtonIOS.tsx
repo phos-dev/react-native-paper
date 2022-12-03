@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
-import color from 'color';
-import { RadioButtonContext, RadioButtonContextType } from './RadioButtonGroup';
-import { handlePress, isChecked } from './utils';
+
+import { withInternalTheme } from '../../core/theming';
+import type { $RemoveChildren, InternalTheme } from '../../types';
+import { getSelectionControlIOSColor } from '../Checkbox/utils';
 import MaterialCommunityIcon from '../MaterialCommunityIcon';
 import TouchableRipple from '../TouchableRipple/TouchableRipple';
-import { withTheme } from '../../core/theming';
-import type { $RemoveChildren } from '../../types';
+import { RadioButtonContext, RadioButtonContextType } from './RadioButtonGroup';
+import { handlePress, isChecked } from './utils';
 
-type Props = $RemoveChildren<typeof TouchableRipple> & {
+export type Props = $RemoveChildren<typeof TouchableRipple> & {
   /**
    * Value of the radio button
    */
@@ -32,7 +33,7 @@ type Props = $RemoveChildren<typeof TouchableRipple> & {
   /**
    * @optional
    */
-  theme: ReactNativePaper.Theme;
+  theme: InternalTheme;
   /**
    * testID to be used on tests.
    */
@@ -64,18 +65,6 @@ const RadioButtonIOS = ({
   testID,
   ...rest
 }: Props) => {
-  const checkedColor = disabled
-    ? theme.colors.disabled
-    : rest.color || theme.colors.accent;
-
-  let rippleColor: string;
-
-  if (disabled) {
-    rippleColor = color(theme.colors.text).alpha(0.16).rgb().string();
-  } else {
-    rippleColor = color(checkedColor).fade(0.32).rgb().string();
-  }
-
   return (
     <RadioButtonContext.Consumer>
       {(context?: RadioButtonContextType) => {
@@ -85,6 +74,12 @@ const RadioButtonIOS = ({
             status,
             value,
           }) === 'checked';
+
+        const { checkedColor, rippleColor } = getSelectionControlIOSColor({
+          theme,
+          disabled,
+          customColor: rest.color,
+        });
 
         return (
           <TouchableRipple
@@ -101,11 +96,6 @@ const RadioButtonIOS = ({
                       onValueChange: context?.onValueChange,
                     });
                   }
-            }
-            // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
-            accessibilityTraits={disabled ? ['button', 'disabled'] : 'button'}
-            accessibilityComponentType={
-              checked ? 'radiobutton_checked' : 'radiobutton_unchecked'
             }
             accessibilityRole="radio"
             accessibilityState={{ disabled, checked }}
@@ -138,9 +128,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(RadioButtonIOS);
+export default withInternalTheme(RadioButtonIOS);
 
 // @component-docs ignore-next-line
-const RadioButtonIOSWithTheme = withTheme(RadioButtonIOS);
+const RadioButtonIOSWithTheme = withInternalTheme(RadioButtonIOS);
 // @component-docs ignore-next-line
 export { RadioButtonIOSWithTheme as RadioButtonIOS };

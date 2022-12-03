@@ -1,20 +1,23 @@
 import * as React from 'react';
 import {
-  StyleSheet,
+  I18nManager,
   StyleProp,
+  StyleSheet,
   View,
   ViewStyle,
-  I18nManager,
 } from 'react-native';
+
 import color from 'color';
-import IconButton from '../IconButton';
-import Text from '../Typography/Text';
-import { withTheme, useTheme } from '../../core/theming';
+import type { InternalTheme } from 'src/types';
+
+import { useInternalTheme, withInternalTheme } from '../../core/theming';
+import Button from '../Button/Button';
+import IconButton from '../IconButton/IconButton';
 import MaterialCommunityIcon from '../MaterialCommunityIcon';
 import Menu from '../Menu/Menu';
-import Button from '../Button';
+import Text from '../Typography/Text';
 
-type Props = React.ComponentPropsWithRef<typeof View> &
+export type Props = React.ComponentPropsWithRef<typeof View> &
   PaginationControlsProps &
   PaginationDropdownProps & {
     /**
@@ -37,7 +40,7 @@ type Props = React.ComponentPropsWithRef<typeof View> &
     /**
      * @optional
      */
-    theme: ReactNativePaper.Theme;
+    theme: InternalTheme;
   };
 
 type PaginationDropdownProps = {
@@ -80,7 +83,10 @@ const PaginationControls = ({
   onPageChange,
   showFastPaginationControls,
 }: PaginationControlsProps) => {
-  const { colors } = useTheme();
+  const theme = useInternalTheme();
+
+  const textColor = theme.isV3 ? theme.colors.onSurface : theme.colors.text;
+
   return (
     <>
       {showFastPaginationControls ? (
@@ -90,10 +96,10 @@ const PaginationControls = ({
               name="page-first"
               color={color}
               size={size}
-              direction={I18nManager.isRTL ? 'rtl' : 'ltr'}
+              direction={I18nManager.getConstants().isRTL ? 'rtl' : 'ltr'}
             />
           )}
-          color={colors.text}
+          iconColor={textColor}
           disabled={page === 0}
           onPress={() => onPageChange(0)}
           accessibilityLabel="page-first"
@@ -105,10 +111,10 @@ const PaginationControls = ({
             name="chevron-left"
             color={color}
             size={size}
-            direction={I18nManager.isRTL ? 'rtl' : 'ltr'}
+            direction={I18nManager.getConstants().isRTL ? 'rtl' : 'ltr'}
           />
         )}
-        color={colors.text}
+        iconColor={textColor}
         disabled={page === 0}
         onPress={() => onPageChange(page - 1)}
         accessibilityLabel="chevron-left"
@@ -119,10 +125,10 @@ const PaginationControls = ({
             name="chevron-right"
             color={color}
             size={size}
-            direction={I18nManager.isRTL ? 'rtl' : 'ltr'}
+            direction={I18nManager.getConstants().isRTL ? 'rtl' : 'ltr'}
           />
         )}
-        color={colors.text}
+        iconColor={textColor}
         disabled={numberOfPages === 0 || page === numberOfPages - 1}
         onPress={() => onPageChange(page + 1)}
         accessibilityLabel="chevron-right"
@@ -134,10 +140,10 @@ const PaginationControls = ({
               name="page-last"
               color={color}
               size={size}
-              direction={I18nManager.isRTL ? 'rtl' : 'ltr'}
+              direction={I18nManager.getConstants().isRTL ? 'rtl' : 'ltr'}
             />
           )}
-          color={colors.text}
+          iconColor={textColor}
           disabled={numberOfPages === 0 || page === numberOfPages - 1}
           onPress={() => onPageChange(numberOfPages - 1)}
           accessibilityLabel="page-last"
@@ -152,7 +158,7 @@ const PaginationDropdown = ({
   numberOfItemsPerPage,
   onItemsPerPageChange,
 }: PaginationDropdownProps) => {
-  const { colors } = useTheme();
+  const { colors } = useInternalTheme();
   const [showSelect, toggleSelect] = React.useState<boolean>(false);
 
   return (
@@ -176,7 +182,7 @@ const PaginationDropdown = ({
           key={option}
           titleStyle={
             option === numberOfItemsPerPage && {
-              color: colors.primary,
+              color: colors?.primary,
             }
           }
           onPress={() => {
@@ -268,7 +274,12 @@ const DataTablePagination = ({
   selectPageDropdownAccessibilityLabel,
   ...rest
 }: Props) => {
-  const labelColor = color(theme.colors.text).alpha(0.6).rgb().string();
+  const labelColor = color(
+    theme.isV3 ? theme.colors.onSurface : theme?.colors.text
+  )
+    .alpha(0.6)
+    .rgb()
+    .string();
 
   return (
     <View
@@ -350,7 +361,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(DataTablePagination);
+export default withInternalTheme(DataTablePagination);
 
 // @component-docs ignore-next-line
 export { DataTablePagination };

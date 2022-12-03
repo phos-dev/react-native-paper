@@ -1,22 +1,23 @@
 import * as React from 'react';
 import { StyleSheet, StyleProp, View, ViewStyle } from 'react-native';
+
 import DataTableCell from './DataTableCell';
 import DataTableHeader, {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   DataTableHeader as _DataTableHeader,
 } from './DataTableHeader';
-import DataTableTitle, {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  DataTableTitle as _DataTableTitle,
-} from './DataTableTitle';
 import DataTablePagination, {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   DataTablePagination as _DataTablePagination,
 } from './DataTablePagination';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import DataTableRow, { DataTableRow as _DataTableRow } from './DataTableRow';
+import DataTableTitle, {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  DataTableTitle as _DataTableTitle,
+} from './DataTableTitle';
 
-type Props = React.ComponentPropsWithRef<typeof View> & {
+export type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * Content of the `DataTable`.
    */
