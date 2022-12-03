@@ -243,7 +243,7 @@ exports[`renders list accordion item with title as a component 1`] = `
   <View
     style={
       Object {
-        "backgroundColor": "#f6f6f6",
+        "backgroundColor": "rgba(255, 251, 254, 1)",
       }
     }
   >
@@ -251,12 +251,16 @@ exports[`renders list accordion item with title as a component 1`] = `
       accessibilityRole="button"
       accessibilityState={
         Object {
+          "disabled": false,
           "expanded": false,
         }
       }
       accessible={true}
+      collapsable={false}
       focusable={true}
+      onBlur={[Function]}
       onClick={[Function]}
+      onFocus={[Function]}
       onResponderGrant={[Function]}
       onResponderMove={[Function]}
       onResponderRelease={[Function]}
@@ -268,6 +272,7 @@ exports[`renders list accordion item with title as a component 1`] = `
           Object {
             "overflow": "hidden",
           },
+          false,
           Array [
             Object {
               "padding": 8,
@@ -292,10 +297,7 @@ exports[`renders list accordion item with title as a component 1`] = `
             Array [
               Object {
                 "alignItems": "center",
-                "height": 40,
                 "justifyContent": "center",
-                "margin": 8,
-                "width": 40,
               },
               undefined,
             ]
@@ -303,22 +305,39 @@ exports[`renders list accordion item with title as a component 1`] = `
         >
           <Text
             accessibilityElementsHidden={true}
+            allowFontScaling={false}
             importantForAccessibility="no-hide-descendants"
             pointerEvents="none"
             selectable={false}
             style={
               Array [
                 Object {
-                  "backgroundColor": "transparent",
-                },
-                Object {
-                  "color": "rgba(0, 0, 0, 0.54)",
+                  "color": "rgba(73, 69, 79, 1)",
                   "fontSize": 24,
                 },
+                Array [
+                  Object {
+                    "lineHeight": 24,
+                    "transform": Array [
+                      Object {
+                        "scaleX": 1,
+                      },
+                    ],
+                  },
+                  Object {
+                    "backgroundColor": "transparent",
+                  },
+                ],
+                Object {
+                  "fontFamily": "Material Design Icons",
+                  "fontStyle": "normal",
+                  "fontWeight": "normal",
+                },
+                Object {},
               ]
             }
           >
-            □
+            󰉋
           </Text>
         </View>
         <View
@@ -340,19 +359,23 @@ exports[`renders list accordion item with title as a component 1`] = `
             style={
               Array [
                 Object {
-                  "color": "#000000",
-                  "fontFamily": "System",
-                  "fontWeight": "400",
+                  "textAlign": "left",
                 },
                 Object {
-                  "textAlign": "left",
+                  "color": "rgba(28, 27, 31, 1)",
+                  "fontFamily": "System",
+                  "fontWeight": "400",
+                  "letterSpacing": 0,
+                },
+                Object {
+                  "writingDirection": "ltr",
                 },
                 Array [
                   Object {
                     "fontSize": 16,
                   },
                   Object {
-                    "color": "rgba(0, 0, 0, 0.87)",
+                    "color": "rgba(28, 27, 31, 1)",
                   },
                   undefined,
                 ],
@@ -374,22 +397,39 @@ exports[`renders list accordion item with title as a component 1`] = `
         >
           <Text
             accessibilityElementsHidden={true}
+            allowFontScaling={false}
             importantForAccessibility="no-hide-descendants"
             pointerEvents="none"
             selectable={false}
             style={
               Array [
                 Object {
-                  "backgroundColor": "transparent",
-                },
-                Object {
-                  "color": "rgba(0, 0, 0, 0.87)",
+                  "color": "rgba(73, 69, 79, 1)",
                   "fontSize": 24,
                 },
+                Array [
+                  Object {
+                    "lineHeight": 24,
+                    "transform": Array [
+                      Object {
+                        "scaleX": 1,
+                      },
+                    ],
+                  },
+                  Object {
+                    "backgroundColor": "transparent",
+                  },
+                ],
+                Object {
+                  "fontFamily": "Material Design Icons",
+                  "fontStyle": "normal",
+                  "fontWeight": "normal",
+                },
+                Object {},
               ]
             }
           >
-            □
+            󰅀
           </Text>
         </View>
       </View>

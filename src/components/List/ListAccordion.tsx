@@ -180,11 +180,10 @@ const ListAccordion = ({
     ? groupContext.expandedId === id
     : expandedInternal;
 
-  const { titleColor, descriptionColor, titleTextColor, rippleColor } =
-    getAccordionColors({
-      theme,
-      isExpanded,
-    });
+  const { titleColor, descriptionColor, rippleColor } = getAccordionColors({
+    theme,
+    isExpanded,
+  });
 
   const handlePress =
     groupContext && id !== undefined
